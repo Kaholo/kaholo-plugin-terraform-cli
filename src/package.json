@@ -1,0 +1,13 @@
+{
+    "name": "kaholo-plugin-terraform-cli",
+    "version": "1.0.0",
+    "description": "Kaholo plaugin for Terraform CLI",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Ilan Yaniv",
+    "license": "ISC",
+    "dependencies": {
+    }
+  }

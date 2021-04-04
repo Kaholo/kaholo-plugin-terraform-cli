@@ -1,66 +1,37 @@
-const child_process = require("child_process")
+const { execTerraform, parseVars } = require("./helpers");
 
-function executeTerraformInit(action, settings){
-	return new Promise((resolve,reject) => {
-		const command = `cd ${action.params.PATH} && terraform init ${action.params.UPGRADE}`
-		child_process.exec(command, (error, stdout, stderr) => {
-			if (error) {
-			   return reject(`exec error: ${error}`);
-			}
-			if (stderr) {
-				console.log(`stderr: ${stderr}`);
-			}
-			return resolve(stdout);
-		});
-	})
+async function executeTerraformInit(action, settings){
+	const args = action.params.UPGRADE ? ["-upgrade"] : [];
+	return execTerraform("init", args, action.params.PATH);
 }
 
-function executeTerraformApply(action, settings){
-	return new Promise((resolve,reject) => {
-        const command = `cd ${action.params.PATH} terraform apply --auto-approve ${action.params.VAR ? '--var ' :''} ${action.params.VAR} ${action.params.VARFILE ? '--varfile ':''} ${action.params.VARFILE}`
-		child_process.exec(command, (error, stdout, stderr) => {
-			if (error) {
-			   return reject(`exec error: ${error}`);
-			}
-			if (stderr) {
-				console.log(`stderr: ${stderr}`);
-			}
-			return resolve(stdout);
-		});
-	})
+async function executeTerraformApply(action, settings){
+	let args = parseVars(action.params.VAR || []);
+	if (action.params.VARFILE) args.push(`-var-file="${action.params.VARFILE}"`);
+	if (action.params.OTHER) args.push(action.params.OTHER);
+	args.push("--auto-approve");
+
+	return execTerraform("apply", args, action.params.PATH);
 }
 
-function executeTerraformPlan(action, settings){
-	return new Promise((resolve,reject) => {
-		const command = `cd ${action.params.PATH} terraform plan --auto-approve ${action.params.OPTIONS}`
-		child_process.exec(command,(error, stdout,stderr) =>{
-			if (error){
-				return reject(`exec error: ${error}`);
-			}
-			if (stderr) {
-				console.log(`stderr: ${stderr}`);
-			}
-			return resolve(stdout);
-		});
-	})
+async function executeTerraformPlan(action, settings){
+	let args = parseVars(action.params.vars);
+	if (action.params.varFile) args.push(`-var-file="${action.params.varFile}"`);
+	if (action.params.OPTIONS) args.push(action.params.OPTIONS);
+	return execTerraform("plan", args, action.params.PATH);
 }
-function executeTerraformPlan(action, settings){
-	return new Promise((resolve,reject) => {
-		const command = `cd ${action.params.COMMAND}`
-		child_process.exec(command,(error, stdout,stderr) =>{
-			if (error){
-				return reject(`exec error: ${error}`);
-			}
-			if (stderr) {
-				console.log(`stderr: ${stderr}`);
-			}
-			return resolve(stdout);
-		});
-	})
+
+async function executeTerraformDestroy(action, settings){
+	let args = parseVars(action.params.vars);
+	if (action.params.varFile) args.push(`-var-file="${action.params.varFile}"`);
+	if (action.params.options) args.push(action.params.options);
+	args.push("--auto-approve");
+	return execTerraform("destroy", args, action.params.path);
 }
+
 module.exports = {
-	setEnvironmentVariable,
 	executeTerraformInit,
 	executeTerraformApply,
-	executeTerraformPlan
+	executeTerraformPlan,
+	executeTerraformDestroy
 };

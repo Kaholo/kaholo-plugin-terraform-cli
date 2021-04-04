@@ -1,0 +1,105 @@
+{
+    "name": "Terraform-CLI",
+    "type": "executer",
+    "execProgram": "node",
+    "main": "app.js",
+    "version": "1.1.0",
+    "imgUrl": "logo.png",
+    "methods": [
+      {
+        "name" : "executeTerraformInit",
+        "viewName": "Init",
+        "params": [
+          {
+            "name":"PATH",
+            "viewName":"Working Directory",
+            "type":"string"
+          },
+          {
+            "name":"UPGRADE",
+            "viewName":"Upgrade",
+            "type":"boolean"
+          }
+        ]
+      },
+      {
+        "name": "executeTerraformApply",
+        "viewName": "Apply",
+        "params": [
+          {
+            "name":"PATH",
+            "viewName":"Working Directory",
+            "type":"string"
+          },
+          {
+            "name":"VAR",
+            "viewName":"Vars",
+            "type":"text"
+          },
+          {
+            "name":"VARFILE",
+            "viewName":"Var file",
+            "type":"string"
+          },
+          {
+            "name":"OTHER",
+            "viewName":"Other Flags",
+            "type":"string"
+          }
+        ]
+      },
+      {
+        "name":"executeTerraformPlan",
+        "viewName": "Plan",
+        "params": [
+          {
+            "name":"PATH",
+            "viewName":"Working Directory",
+            "type":"string"
+          },
+          {
+            "name":"vars",
+            "viewName":"Vars",
+            "type":"text"
+          },
+          {
+            "name":"varFile",
+            "viewName":"Var file",
+            "type":"string"
+          },
+          {
+            "name":"OPTIONS",
+            "viewName":"Options",
+            "type":"string"
+          }
+        ]
+      },
+      {
+        "name":"executeTerraformDestroy",
+        "viewName": "Destroy",
+        "params": [
+          {
+            "name":"path",
+            "viewName":"Working Directory",
+            "type":"string"
+          },
+          {
+            "name":"vars",
+            "viewName":"Vars",
+            "type":"text"
+          },
+          {
+            "name":"varFile",
+            "viewName":"Var file",
+            "type":"string"
+          },
+          {
+            "name":"options",
+            "viewName":"Options",
+            "type":"string"
+          }
+        ]
+      }
+    ]
+  }
+  

@@ -5,7 +5,7 @@
   "main": "app.js",
   "version": "1.1.2",
   "imgUrl": "logo.png",
-  "category": "CLOUD",
+  "category": ["INFRASTRUCTURE MGMT", "CI/CD"],
   "keywords": ["cloud", "cli", "container", "infra", "infrastructure", "platform", "manage", "cluster", "vm", "instance"],
   "description": "Kaholo plaugin for integration with Terraform CLI.",
   "methods": [

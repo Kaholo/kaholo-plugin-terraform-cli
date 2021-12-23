@@ -1,105 +1,148 @@
 {
-    "name": "Terraform-CLI",
-    "type": "executer",
-    "execProgram": "node",
-    "main": "app.js",
-    "version": "1.1.0",
-    "imgUrl": "logo.png",
-    "methods": [
-      {
-        "name" : "executeTerraformInit",
-        "viewName": "Init",
-        "params": [
-          {
-            "name":"PATH",
-            "viewName":"Working Directory",
-            "type":"string"
-          },
-          {
-            "name":"UPGRADE",
-            "viewName":"Upgrade",
-            "type":"boolean"
-          }
-        ]
-      },
-      {
-        "name": "executeTerraformApply",
-        "viewName": "Apply",
-        "params": [
-          {
-            "name":"PATH",
-            "viewName":"Working Directory",
-            "type":"string"
-          },
-          {
-            "name":"VAR",
-            "viewName":"Vars",
-            "type":"text"
-          },
-          {
-            "name":"VARFILE",
-            "viewName":"Var file",
-            "type":"string"
-          },
-          {
-            "name":"OTHER",
-            "viewName":"Other Flags",
-            "type":"string"
-          }
-        ]
-      },
-      {
-        "name":"executeTerraformPlan",
-        "viewName": "Plan",
-        "params": [
-          {
-            "name":"PATH",
-            "viewName":"Working Directory",
-            "type":"string"
-          },
-          {
-            "name":"vars",
-            "viewName":"Vars",
-            "type":"text"
-          },
-          {
-            "name":"varFile",
-            "viewName":"Var file",
-            "type":"string"
-          },
-          {
-            "name":"OPTIONS",
-            "viewName":"Options",
-            "type":"string"
-          }
-        ]
-      },
-      {
-        "name":"executeTerraformDestroy",
-        "viewName": "Destroy",
-        "params": [
-          {
-            "name":"path",
-            "viewName":"Working Directory",
-            "type":"string"
-          },
-          {
-            "name":"vars",
-            "viewName":"Vars",
-            "type":"text"
-          },
-          {
-            "name":"varFile",
-            "viewName":"Var file",
-            "type":"string"
-          },
-          {
-            "name":"options",
-            "viewName":"Options",
-            "type":"string"
-          }
-        ]
-      }
-    ]
-  }
-  
+  "name": "Terraform-CLI",
+  "type": "executer",
+  "execProgram": "node",
+  "main": "app.js",
+  "version": "1.1.2",
+  "imgUrl": "logo.png",
+  "category": ["INFRASTRUCTURE MGMT", "CI/CD"],
+  "keywords": ["cloud", "cli", "container", "infra", "infrastructure", "platform", "manage", "cluster", "vm", "instance"],
+  "description": "Kaholo plaugin for integration with Terraform CLI.",
+  "methods": [
+    {
+      "name": "executeTerraformInit",
+      "viewName": "Init",
+      "params": [
+        {
+          "name": "PATH",
+          "viewName": "Working Directory",
+          "type": "string",
+          "description": "Folder path.",
+          "placeholder": "/home/user/tmp/",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/init.html"
+        },
+        {
+          "name": "UPGRADE",
+          "viewName": "Upgrade",
+          "type": "boolean",
+          "description": "Choose to upgrade modules.",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/0.13upgrade.html"
+        }
+      ]
+    },
+    {
+      "name": "executeTerraformApply",
+      "viewName": "Apply",
+      "params": [
+        {
+          "name": "PATH",
+          "viewName": "Working Directory",
+          "type": "string",
+          "description": "Folder path.",
+          "placeholder": "/home/user/tmp/",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/apply.html"
+        },
+        {
+          "name": "VAR",
+          "viewName": "Vars",
+          "type": "text",
+          "description": "Variables to pass the apply action..",
+          "placeholder": "exampleVar=Hello World\nmyPath=/home/user/test/",
+          "learnUrl": "https://www.terraform.io/docs/language/expressions/types.html"
+        },
+        {
+          "name": "VARFILE",
+          "viewName": "Var file",
+          "type": "string",
+          "description": "File containing all the requested variables to pass.",
+          "placeholder": "/home/user/tmp/vars_file.json",
+          "learnUrl": "https://www.terraform.io/docs/language/functions/file.html"
+        },
+        {
+          "name": "OTHER",
+          "viewName": "Other Flags",
+          "type": "string",
+          "description": "Other optional flags to add the command..",
+          "placeholder": "-compact-warnings",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/apply.html"
+        }
+      ]
+    },
+    {
+      "name": "executeTerraformPlan",
+      "viewName": "Plan",
+      "params": [
+        {
+          "name": "PATH",
+          "viewName": "Working Directory",
+          "type": "string",
+          "description": "Folder path.",
+          "placeholder": "/home/user/tmp/",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/plan.html"
+        },
+        {
+          "name": "vars",
+          "viewName": "Vars",
+          "type": "text",
+          "description": "Variables to pass the resources.",
+          "placeholder": "exampleVar=Hello World\nmyPath=/home/user/test/",
+          "learnUrl": "https://www.terraform.io/docs/language/expressions/types.html"
+        },
+        {
+          "name": "varFile",
+          "viewName": "Var file",
+          "type": "string",
+          "description": "File containing all the requested variables to pass.",
+          "placeholder": "/home/user/tmp/vars_file.json",
+          "learnUrl": "https://www.terraform.io/docs/language/functions/file.html"
+        },
+        {
+          "name": "OPTIONS",
+          "viewName": "Options",
+          "type": "string",
+          "description": "Other optional flags to add the command..",
+          "placeholder": "-compact-warnings",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/plan.html"
+        }
+      ]
+    },
+    {
+      "name": "executeTerraformDestroy",
+      "viewName": "Destroy",
+      "params": [
+        {
+          "name": "path",
+          "viewName": "Working Directory",
+          "type": "string",
+          "description": "Folder path.",
+          "placeholder": "/home/user/tmp/",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
+        },
+        {
+          "name": "vars",
+          "viewName": "Vars",
+          "type": "text",
+          "description": "Variables to pass the resources.",
+          "placeholder": "exampleVar=Hello World\nmyPath=/home/user/test/",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
+        },
+        {
+          "name": "varFile",
+          "viewName": "Var file",
+          "type": "string",
+          "description": "File containing all the requested variables to pass.",
+          "placeholder": "/home/user/tmp/vars_file.json",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
+        },
+        {
+          "name": "options",
+          "viewName": "Options",
+          "type": "string",
+          "description": "Other optional flags to add the command..",
+          "placeholder": "-compact-warnings",
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 # kaholo-plugin-terraform-cli
-Kaholo pPlugin to run Terraform CLI commands.
+Kaholo Plugin to run Terraform CLI commands.
 
 ## How To Use
 After installing the plugin on the Kaholo server, make sure that Terraform is installed on every agent that will run methods from this plugin.

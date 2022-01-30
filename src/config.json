@@ -1,5 +1,6 @@
 {
   "name": "Terraform-CLI",
+  "viewName":"Terraform CLI",
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
@@ -7,7 +8,7 @@
   "imgUrl": "logo.png",
   "category": ["INFRASTRUCTURE MGMT", "CI/CD"],
   "keywords": ["cloud", "cli", "container", "infra", "infrastructure", "platform", "manage", "cluster", "vm", "instance"],
-  "description": "Kaholo plaugin for integration with Terraform CLI.",
+  "description": "Kaholo plugin for integration with Terraform CLI.",
   "methods": [
     {
       "name": "executeTerraformInit",
@@ -38,7 +39,7 @@
           "name": "PATH",
           "viewName": "Working Directory",
           "type": "string",
-          "description": "Folder path.",
+          "description": "Folder path containing the Terraform resources.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/apply.html"
         },
@@ -46,7 +47,7 @@
           "name": "VAR",
           "viewName": "Vars",
           "type": "text",
-          "description": "Variables to pass the apply action..",
+          "description": "Variables to pass the apply action, either as text with each variable separated by new line or from code as an object.",
           "placeholder": "exampleVar=Hello World\nmyPath=/home/user/test/",
           "learnUrl": "https://www.terraform.io/docs/language/expressions/types.html"
         },
@@ -62,7 +63,7 @@
           "name": "OTHER",
           "viewName": "Other Flags",
           "type": "string",
-          "description": "Other optional flags to add the command..",
+          "description": "Other optional flags to add to the command.",
           "placeholder": "-compact-warnings",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/apply.html"
         }
@@ -76,7 +77,7 @@
           "name": "PATH",
           "viewName": "Working Directory",
           "type": "string",
-          "description": "Folder path.",
+          "description": "Folder path containing the Terraform resources.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/plan.html"
         },
@@ -84,7 +85,7 @@
           "name": "vars",
           "viewName": "Vars",
           "type": "text",
-          "description": "Variables to pass the resources.",
+          "description": "Variables to pass the resources, either as text with each variable separated by new line or from code as an object.",
           "placeholder": "exampleVar=Hello World\nmyPath=/home/user/test/",
           "learnUrl": "https://www.terraform.io/docs/language/expressions/types.html"
         },
@@ -100,7 +101,7 @@
           "name": "OPTIONS",
           "viewName": "Options",
           "type": "string",
-          "description": "Other optional flags to add the command..",
+          "description": "Other optional flags to add to the command.",
           "placeholder": "-compact-warnings",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/plan.html"
         }
@@ -114,7 +115,7 @@
           "name": "path",
           "viewName": "Working Directory",
           "type": "string",
-          "description": "Folder path.",
+          "description": "Folder path containing the Terraform resources.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
         },
@@ -122,7 +123,7 @@
           "name": "vars",
           "viewName": "Vars",
           "type": "text",
-          "description": "Variables to pass the resources.",
+          "description": "Variables to pass the resources, either as text with each variable separated by new line or from code as an object.",
           "placeholder": "exampleVar=Hello World\nmyPath=/home/user/test/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
         },
@@ -138,7 +139,7 @@
           "name": "options",
           "viewName": "Options",
           "type": "string",
-          "description": "Other optional flags to add the command..",
+          "description": "Other optional flags to add to the command.",
           "placeholder": "-compact-warnings",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
         }

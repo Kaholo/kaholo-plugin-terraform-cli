@@ -17,8 +17,29 @@ This method runs ```terraform apply```. Creates all resources needed and runs al
 ### Parameters
 1. Working Directory (String) **Required** - The path of the directory containing the Terraform resources to apply.
 2. Vars (Text/Object/Array) **Optional** - Variables to pass to the Terraform resource. Pass in a ```key=value``` format. Can be passed either as text - with each variable seprated by a new line, or from code as an object whose fields are the variables or an array of key value pair strings.
-3. Var File (String) **Optional** - Path to variables file. Can be passed either as an absolute path or relative path to the Working Directory parameter.
-4. Other Flags (String) **Optional** - Any other flags or arguments to pass to the CLI.
+
+**Code Example:**
+* When using directly in the Code field:
+```
+(async ()=>
+    {
+        var1: `val1`,
+        secret: await kaholo.vault.getValueByKey("my-secret")
+    }
+)()
+```
+* You can also add this function in the Code layer and invoke it from the Code field:
+```
+async function getTrerraformVars(){
+    return {
+        var1: `val1`,
+        secret: await kaholo.vault.getValueByKey("my-secret")
+    }
+}
+```
+
+4. Var File (String) **Optional** - Path to variables file. Can be passed either as an absolute path or relative path to the Working Directory parameter.
+5. Other Flags (String) **Optional** - Any other flags or arguments to pass to the CLI.
 
 ## Method: Plan
 This method runs ```terraform plan```. Creates an execution plan of all Terraform resources in the directory specified. [Learn More](https://www.terraform.io/docs/cli/commands/plan.html)
@@ -26,8 +47,28 @@ This method runs ```terraform plan```. Creates an execution plan of all Terrafor
 ### Parameters
 1. Working Directory (String) **Required** - The path of the directory containing the Terraform resources to plan.
 2. Vars (Text/Object/Array) **Optional** - Variables to pass to the terraform resource. Pass in a ```key=value``` format.
-3. Var File (String) **Optional** - Path to variables file. Can be passed either as an absolute path or relative path to the Working Directory parameter.
-4. Options (String) **Optional** - Any other flags or arguments to pass to the CLI.
+
+**Code Example:**
+* When using directly in the Code field:
+```
+(async ()=>
+    {
+        var1: `val1`,
+        secret: await kaholo.vault.getValueByKey("my-secret")
+    }
+)()
+```
+* You can also add this function in the Code layer and invoke it from the Code field:
+```
+async function getTrerraformVars(){
+    return {
+        var1: `val1`,
+        secret: await kaholo.vault.getValueByKey("my-secret")
+    }
+}
+```
+4. Var File (String) **Optional** - Path to variables file. Can be passed either as an absolute path or relative path to the Working Directory parameter.
+5. Options (String) **Optional** - Any other flags or arguments to pass to the CLI.
 
 ## Method: Destroy
 This method runs ```terraform destroy```. Destroys all remote objects managed by a particular Terraform configuration. [Learn More](https://www.terraform.io/docs/cli/commands/destroy.html)
@@ -35,5 +76,25 @@ This method runs ```terraform destroy```. Destroys all remote objects managed by
 ### Parameters
 1. Working Directory (String) **Required** - The path of the directory containing the Terraform resources to destroy.
 2. Vars (Text/Object/Array) **Optional** - Variables to pass to the Terraform resource. Pass in a ```key=value``` format.
-3. Var File (String) **Optional** - Path to variables file. Can be passed either as an absolute path or relative path to the Working Directory parameter.
-4. Options (String) **Optional** - Any other flags or arguments to pass to the CLI.
+
+**Code Example:**
+* When using directly in the Code field:
+```
+(async ()=>
+    {
+        var1: `val1`,
+        secret: await kaholo.vault.getValueByKey("my-secret")
+    }
+)()
+```
+* You can also add this function in the Code layer and invoke it from the Code field:
+```
+async function getTrerraformVars(){
+    return {
+        var1: `val1`,
+        secret: await kaholo.vault.getValueByKey("my-secret")
+    }
+}
+```
+4. Var File (String) **Optional** - Path to variables file. Can be passed either as an absolute path or relative path to the Working Directory parameter.
+5. Options (String) **Optional** - Any other flags or arguments to pass to the CLI.

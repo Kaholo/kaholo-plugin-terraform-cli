@@ -5,28 +5,38 @@
   "execProgram": "node",
   "main": "app.js",
   "version": "1.1.3",
+  "description": "Kaholo plugin for integration with Terraform CLI.",
   "imgUrl": "logo.png",
   "category": ["INFRASTRUCTURE MGMT", "CI/CD"],
-  "keywords": ["cloud", "cli", "container", "infra", "infrastructure", "platform", "manage", "cluster", "vm", "instance"],
-  "description": "Kaholo plugin for integration with Terraform CLI.",
+  "keywords": ["cloud", "CLI", "infra", "infrastructure", "IaC", "management", "vm", "instance", "HashiCorp", "declarative"],
+  "settings": [
+    {
+      "name": "workingDir",
+      "viewName": "Default Working Directory",
+      "type": "string",
+      "description": "This is the default location where Terraform will expect to find an inventory and execution script.",
+      "placeholder": "/home/user/tmp/",
+      "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/init"
+    }
+  ],
   "methods": [
     {
       "name": "executeTerraformInit",
       "viewName": "Init",
       "params": [
         {
-          "name": "PATH",
+          "name": "workingDir",
           "viewName": "Working Directory",
           "type": "string",
-          "description": "Folder path.",
+          "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/init.html"
         },
         {
-          "name": "UPGRADE",
+          "name": "upgrade",
           "viewName": "Upgrade",
           "type": "boolean",
-          "description": "Choose to upgrade modules.",
+          "description": "Install the latest module and provider versions allowed within configured constraints",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/0.13upgrade.html"
         }
       ]
@@ -36,34 +46,34 @@
       "viewName": "Apply",
       "params": [
         {
-          "name": "PATH",
+          "name": "workingDir",
           "viewName": "Working Directory",
           "type": "string",
-          "description": "Folder path containing the Terraform resources.",
+          "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/apply.html"
         },
         {
-          "name": "VAR",
+          "name": "vars",
           "viewName": "Vars",
           "type": "text",
-          "description": "Variables to pass the apply action, either as text with each variable separated by new line or from code as an object.",
-          "placeholder": "exampleVar=Hello World\nmyPath=/home/user/test/",
-          "learnUrl": "https://www.terraform.io/docs/language/expressions/types.html"
+          "description": "Set values for input variables in the root module of the configuration, either key=value items separated by new line or as a JSON object.",
+          "placeholder": "region=ap-northwest-1\nsize=xlarge",
+          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
         },
         {
-          "name": "VARFILE",
-          "viewName": "Var file",
+          "name": "varFile",
+          "viewName": "Var File",
           "type": "string",
-          "description": "File containing all the requested variables to pass.",
+          "description": "Load variable values from the given file",
           "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://www.terraform.io/docs/language/functions/file.html"
+          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
         },
         {
-          "name": "OTHER",
-          "viewName": "Other Flags",
+          "name": "options",
+          "viewName": "Other Options",
           "type": "string",
-          "description": "Other optional flags to add to the command.",
+          "description": "Other optional arguments pass to the Terraform command.",
           "placeholder": "-compact-warnings",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/apply.html"
         }
@@ -74,10 +84,10 @@
       "viewName": "Plan",
       "params": [
         {
-          "name": "PATH",
+          "name": "workingDir",
           "viewName": "Working Directory",
           "type": "string",
-          "description": "Folder path containing the Terraform resources.",
+          "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/plan.html"
         },
@@ -85,23 +95,23 @@
           "name": "vars",
           "viewName": "Vars",
           "type": "text",
-          "description": "Variables to pass the resources, either as text with each variable separated by new line or from code as an object.",
-          "placeholder": "exampleVar=Hello World\nmyPath=/home/user/test/",
-          "learnUrl": "https://www.terraform.io/docs/language/expressions/types.html"
+          "description": "Set values for input variables in the root module of the configuration, either key=value items separated by new line or as a JSON object.",
+          "placeholder": "region=ap-northwest-1\nsize=xlarge",
+          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
         },
         {
           "name": "varFile",
-          "viewName": "Var file",
+          "viewName": "Var File",
           "type": "string",
-          "description": "File containing all the requested variables to pass.",
+          "description": "Load variable values from the given file",
           "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://www.terraform.io/docs/language/functions/file.html"
+          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
         },
         {
-          "name": "OPTIONS",
-          "viewName": "Options",
+          "name": "options",
+          "viewName": "Other Options",
           "type": "string",
-          "description": "Other optional flags to add to the command.",
+          "description": "Other optional arguments pass to the Terraform command.",
           "placeholder": "-compact-warnings",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/plan.html"
         }
@@ -112,10 +122,10 @@
       "viewName": "Destroy",
       "params": [
         {
-          "name": "path",
+          "name": "workingDir",
           "viewName": "Working Directory",
           "type": "string",
-          "description": "Folder path containing the Terraform resources.",
+          "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
         },
@@ -123,23 +133,23 @@
           "name": "vars",
           "viewName": "Vars",
           "type": "text",
-          "description": "Variables to pass the resources, either as text with each variable separated by new line or from code as an object.",
-          "placeholder": "exampleVar=Hello World\nmyPath=/home/user/test/",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
+          "description": "Set values for input variables in the root module of the configuration, either key=value items separated by new line or as a JSON object.",
+          "placeholder": "region=ap-northwest-1\nsize=xlarge",
+          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
         },
         {
           "name": "varFile",
-          "viewName": "Var file",
+          "viewName": "Var File",
           "type": "string",
-          "description": "File containing all the requested variables to pass.",
+          "description": "Load variable values from the given file",
           "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
+          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
         },
         {
           "name": "options",
-          "viewName": "Options",
+          "viewName": "Other Options",
           "type": "string",
-          "description": "Other optional flags to add to the command.",
+          "description": "Other optional arguments pass to the Terraform command.",
           "placeholder": "-compact-warnings",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
         }

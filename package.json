@@ -1,20 +1,13 @@
 {
-  "name": "kaholo-plugin-terraform-cli",
-  "description": "Kaholo plaugin for Terraform CLI",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "npx eslint .",
-    "lint:fix": "npx eslint . --fix"
-  },
-  "author": "Kaholo Team",
-  "license": "ISC",
-  "dependencies": {
-    "package.json": "^2.0.1"
-  },
-  "devDependencies": {
-    "eslint": "^8.10.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.4"
+    "name": "kaholo-plugin-terraform-cli",
+    "version": "1.1.0",
+    "description": "Kaholo plaugin for Terraform CLI",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Kaholo Team",
+    "license": "ISC",
+    "dependencies": {
+    }
   }
-}

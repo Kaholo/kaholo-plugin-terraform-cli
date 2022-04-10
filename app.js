@@ -1,44 +1,33 @@
 const { execTerraform, parseVars } = require("./helpers");
 
-// async function executeTerraformInit(action, settings) {
-//   const args = action.params.upgrade ? ["-upgrade"] : [];
-//   const path = action.params.workingDir || settings.workingDir;
-//   if (path) {
-//     return execTerraform("init", args, path);
-//   }
-//   throw new Error("Parameter Working Directory is required.");
-// }
-
 async function executeTerraformInit(action, settings) {
-  const args = action.params.upgrade ? ["-upgrade"] : [];
-  const path = action.params.workingDir || settings.workingDir;
-  return execTerraform("init", args, path);
+  return exeTf("init", action, settings);
 }
 
 async function executeTerraformApply(action, settings) {
-  const args = parseVars(action.params.vars || []);
-  if (action.params.varFile) { args.push(`-var-file="${action.params.varFile}"`); }
-  if (action.params.options) { args.push(action.params.options); }
-  args.push("--auto-approve");
-  const path = action.params.workingDir || settings.workingDir;
-  return execTerraform("apply", args, path);
+  return exeTf("apply", action, settings);
 }
 
 async function executeTerraformPlan(action, settings) {
-  const args = parseVars(action.params.vars);
-  if (action.params.varFile) { args.push(`-var-file="${action.params.varFile}"`); }
-  if (action.params.options) { args.push(action.params.options); }
-  const path = action.params.workingDir || settings.workingDir;
-  return execTerraform("plan", args, path);
+  return exeTf("plan", action, settings);
 }
 
 async function executeTerraformDestroy(action, settings) {
-  const args = parseVars(action.params.vars);
-  if (action.params.varFile) { args.push(`-var-file="${action.params.varFile}"`); }
-  if (action.params.options) { args.push(action.params.options); }
-  args.push("--auto-approve");
+  return exeTf("destroy", action, settings);
+}
+
+async function exeTf(mode, action, settings) {
   const path = action.params.workingDir || settings.workingDir;
-  return execTerraform("destroy", args, path);
+  let args;
+  if (mode === "init") {
+    args = action.params.upgrade ? ["-upgrade"] : [];
+  } else {
+    args = parseVars(action.params.vars);
+    if (action.params.varFile) { args.push(`-var-file="${action.params.varFile}"`); }
+    if (mode === "apply" || mode === "destroy") { args.push("--auto-approve"); }
+    if (action.params.options) { args.push(action.params.options); }
+  }
+  return execTerraform(mode, args, path);
 }
 
 module.exports = {

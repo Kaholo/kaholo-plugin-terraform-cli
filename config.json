@@ -28,7 +28,7 @@
           "name": "workingDir",
           "viewName": "Working Directory",
           "type": "string",
-          "required": true,
+          "required": false,
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/init.html"
@@ -50,7 +50,7 @@
           "name": "workingDir",
           "viewName": "Working Directory",
           "type": "string",
-          "required": true,
+          "required": false,
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/apply.html"
@@ -89,7 +89,7 @@
           "name": "workingDir",
           "viewName": "Working Directory",
           "type": "string",
-          "required": true,
+          "required": false,
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/plan.html"
@@ -128,7 +128,7 @@
           "name": "workingDir",
           "viewName": "Working Directory",
           "type": "string",
-          "required": true,
+          "required": false,
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"

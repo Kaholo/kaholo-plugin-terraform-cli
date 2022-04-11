@@ -16,7 +16,5 @@ module.exports = {
     curly: ["error", "all"],
     "no-console": ["warn", { allow: ["info", "warn", "error"] }],
     "no-use-before-define": ["error", { functions: false }],
-    // "no-empty": ["error", { allowEmptyCatch: true }],
-    // "no-unsafe-finally": ["off"],
   },
 };

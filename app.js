@@ -21,9 +21,9 @@ async function exeTf(mode, action, settings) {
   let args;
   if (mode === "init") {
     args = action.params.upgrade ? ["-upgrade"] : [];
-    return execTerraform(mode, args, path);
+  } else {
+    args = parseVars(action.params.vars);
   }
-  args = parseVars(action.params.vars);
   if (action.params.varFile) { args.push(`-var-file="${action.params.varFile}"`); }
   if (mode === "apply" || mode === "destroy") { args.push("--auto-approve"); }
   if (action.params.options) { args.push(action.params.options); }

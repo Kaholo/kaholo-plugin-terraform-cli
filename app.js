@@ -26,6 +26,7 @@ async function exeTf(mode, action, settings) {
 
   if (mode === "init") {
     args = action.params.upgrade ? ["-upgrade"] : [];
+    return execTerraform(mode, args, workDir);
   }
 
   args = parseVars(action.params.vars);

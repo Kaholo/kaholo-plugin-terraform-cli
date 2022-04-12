@@ -24,9 +24,15 @@ async function exeTf(mode, action, settings) {
   } else {
     args = parseVars(action.params.vars);
   }
-  if (action.params.varFile) { args.push(`-var-file="${action.params.varFile}"`); }
-  if (mode === "apply" || mode === "destroy") { args.push("--auto-approve"); }
-  if (action.params.options) { args.push(action.params.options); }
+  if (action.params.varFile) {
+    args.push(`-var-file="${action.params.varFile}"`);
+  }
+  if (mode === "apply" || mode === "destroy") {
+    args.push("--auto-approve");
+  }
+  if (action.params.options) {
+    args.push(action.params.options);
+  }
   return execTerraform(mode, args, path);
 }
 

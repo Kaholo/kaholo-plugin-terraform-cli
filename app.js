@@ -21,7 +21,7 @@ async function executeTerraformDestroy(action, settings) {
 }
 
 async function exeTf(mode, action, settings) {
-  const workDir = action.params.workingDir || settings.workingDir;
+  const workDir = action.params.workingDirectory || settings.workingDirectory;
   let args;
 
   if (mode === "init") {

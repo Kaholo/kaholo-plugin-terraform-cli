@@ -16,5 +16,6 @@ module.exports = {
     curly: ["error", "all"],
     "no-console": ["warn", { allow: ["info", "warn", "error"] }],
     "no-use-before-define": ["error", { functions: false }],
+    "brace-style": ["error", "1tbs", { allowSingleLine: false }],
   },
 };

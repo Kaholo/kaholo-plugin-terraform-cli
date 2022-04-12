@@ -11,7 +11,7 @@
   "keywords": ["cloud", "CLI", "infra", "infrastructure", "IaC", "management", "vm", "instance", "HashiCorp", "declarative"],
   "settings": [
     {
-      "name": "workingDir",
+      "name": "workingDirectory",
       "viewName": "Default Working Directory",
       "type": "string",
       "description": "This is the default location where Terraform will expect to find an inventory and execution script.",
@@ -25,7 +25,7 @@
       "viewName": "Init",
       "params": [
         {
-          "name": "workingDir",
+          "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
           "required": false,
@@ -47,7 +47,7 @@
       "viewName": "Apply",
       "params": [
         {
-          "name": "workingDir",
+          "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
           "required": false,
@@ -86,7 +86,7 @@
       "viewName": "Plan",
       "params": [
         {
-          "name": "workingDir",
+          "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
           "required": false,
@@ -125,7 +125,7 @@
       "viewName": "Destroy",
       "params": [
         {
-          "name": "workingDir",
+          "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
           "required": false,

@@ -17,7 +17,7 @@ async function executeTerraformDestroy(action, settings) {
 }
 
 async function exeTf(mode, action, settings) {
-  const path = action.params.workingDir || settings.workingDir;
+  const path = action.params.workingDirectory || settings.workingDirectory;
   let args;
   if (mode === "init") {
     args = action.params.upgrade ? ["-upgrade"] : [];

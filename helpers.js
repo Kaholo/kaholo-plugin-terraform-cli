@@ -48,14 +48,7 @@ async function makeVarFile(secretVarFile, workDir) {
   }
   const svfName = `temp-9bxY9f-${uuidv4()}.tfvars`; // e.g. temp-9bxY9f-d2c714eb-9b9f-49b0-844f-34810262a4c9.tfvars
   const svfPath = pathmodule.join(workDir, svfName);
-  return new Promise((resolve, reject) => {
-    fs.writeFile(svfPath, svf, (err) => {
-      if (err) {
-        return reject(err);
-      }
-      return resolve(svfName);
-    });
-  });
+  await fs.promises.writeFile(svfPath, svf);
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
 const childProcess = require("child_process");
-const uuidv4 = require("uuid/v4");
-const pathmodule = require("path");
 const fs = require("fs");
+const pathmodule = require("path");
+const { v4: uuidv4 } = require("uuid");
 
 async function execTerraform(cmd, args, path) {
   if (!path) {

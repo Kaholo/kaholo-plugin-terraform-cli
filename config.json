@@ -4,7 +4,7 @@
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "Kaholo plugin for integration with Terraform CLI.",
   "imgUrl": "logo.png",
   "category": ["INFRASTRUCTURE MGMT", "CI/CD"],
@@ -28,7 +28,7 @@
           "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
-          "required": false,
+          "required": true,
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/init.html"
@@ -69,7 +69,14 @@
           "type": "string",
           "description": "Load variable values from the given file",
           "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
+        },
+        {
+          "name": "secretVarFile",
+          "viewName": "Secret Var File",
+          "type": "vault",
+          "description": "Same as parameter \"Var File\" but from the Kaholo Vault",
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "options",
@@ -108,7 +115,14 @@
           "type": "string",
           "description": "Load variable values from the given file",
           "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
+        },
+        {
+          "name": "secretVarFile",
+          "viewName": "Secret Var File",
+          "type": "vault",
+          "description": "Same as parameter \"Var File\" but from the Kaholo Vault",
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "options",
@@ -147,7 +161,14 @@
           "type": "string",
           "description": "Load variable values from the given file",
           "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
+        },
+        {
+          "name": "secretVarFile",
+          "viewName": "Secret Var File",
+          "type": "vault",
+          "description": "Same as parameter \"Var File\" but from the Kaholo Vault",
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "options",

@@ -1,4 +1,4 @@
-const { execTerraform, parseVars } = require("./helpers");
+const { execTerraform, parseVars, makeVarFile } = require("./helpers");
 
 async function executeTerraformInit(action, settings) {
   return exeTf("init", action, settings);
@@ -47,7 +47,7 @@ async function exeTf(mode, action, settings) {
     const shredCmd = shredArray.join("; ");
     args.push(`; ${shredCmd}`);
   }
-  return execTerraform(mode, args, path);
+  return execTerraform(mode, args, workDir);
 }
 
 module.exports = {

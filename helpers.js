@@ -1,4 +1,7 @@
 const childProcess = require("child_process");
+const uuidv4 = require("uuid/v4");
+const pathmodule = require("path");
+const fs = require("fs");
 
 async function execTerraform(cmd, args, path) {
   if (!path) {
@@ -51,4 +54,5 @@ async function makeVarFile(secretVarFile, workDir) {
 module.exports = {
   execTerraform,
   parseVars,
+  makeVarFile,
 };

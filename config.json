@@ -69,14 +69,14 @@
           "type": "string",
           "description": "Load variable values from the given file",
           "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "secretVarFile",
           "viewName": "Secret Var File",
           "type": "vault",
           "description": "Same as parameter \"Var File\" but from the Kaholo Vault",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "options",
@@ -115,14 +115,14 @@
           "type": "string",
           "description": "Load variable values from the given file",
           "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "secretVarFile",
           "viewName": "Secret Var File",
           "type": "vault",
           "description": "Same as parameter \"Var File\" but from the Kaholo Vault",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "options",
@@ -161,14 +161,14 @@
           "type": "string",
           "description": "Load variable values from the given file",
           "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "secretVarFile",
           "viewName": "Secret Var File",
           "type": "vault",
           "description": "Same as parameter \"Var File\" but from the Kaholo Vault",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "options",

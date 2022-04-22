@@ -4,6 +4,28 @@ Kaholo Plugin to run Terraform CLI commands.
 ## How To Use
 After installing the plugin on the Kaholo server, make sure that Terraform is installed on every agent that will run methods from this plugin.
 
+## Using Var Files and Vars
+If using **Vars**, the easiest format is one-per-line `key=value` format, as if using `terraform apply -var 'foo=bar'` on the command line. The format is the same whether Parameter Vars or Secret Vars is used, the only difference being that secret vars are in the Kaholo vault.
+
+    aws_access_key=AKIA3LQJ6W8S3DHVWNLY
+    aws_secret_key=M9N3dLzEKnhV2KXIaGFrGofmtcb7U0FCa2gRXtii
+
+For variable requirements beyond simple key=value pairs, it is customary to use a Var File instead of Vars, but it is still possible to use Vars, for example type `list(string)`. However quotes should be escaped with `\` in the text parameter:
+ 
+    aws_access_key=AKIA3LQJ6W8S3DHVWNLY
+    aws_secret_key=M9N3dLzEKnhV2KXIaGFrGofmtcb7U0FCa2gRXtii
+    regions=[\"us-west\", \"sa-east\", \"ap-northwest\"]
+
+Also, if using the code layer both the `\` and `"` characters need to be escaped to see them all the way through to the command line. For example:
+
+    vars = "aws_access_key=AKIA3LQJ6W8S3DHVWNLY\naws_secret_key=M9N3dLzEKnhV2KXIaGFrGofmtcb7U0FCa2gRXtii\nregions=[\\\"us-west\\\", \\\"sa-east\\\", \\\"ap-northwest\\\"]"
+
+If using a **Var File**, use the standard Terraform tfvars format as if using `terraform apply -var-file=foo.tfvars` on the command line. This typically one-per-line `key = "value"` format, e.g.,
+
+    aws_access_key = "AKIA3LQJ6W8S3DHVWNLY"
+    aws_secret_key = "M9N3dLzEKnhV2KXIaGFrGofmtcb7U0FCa2gRXtii"
+    regions = ["us-west", "sa-east", "ap-northwest"]
+
 ## Method: Init
 This method runs ```terraform init```. Initiates the Terraform instance in the specified directory. [Learn More](https://www.terraform.io/cli/commands/init)
 

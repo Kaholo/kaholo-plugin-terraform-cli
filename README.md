@@ -120,3 +120,4 @@ async function getTrerraformVars(){
 ```
 4. Var File (String) **Optional** - Path to variables file. Can be passed either as an absolute path or relative path to the Working Directory parameter.
 5. Options (String) **Optional** - Any other flags or arguments to pass to the CLI.
+

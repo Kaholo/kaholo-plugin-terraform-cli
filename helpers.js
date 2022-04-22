@@ -1,4 +1,7 @@
 const childProcess = require("child_process");
+const fs = require("fs");
+const pathmodule = require("path");
+const { v4: uuidv4 } = require("uuid");
 
 async function execTerraform(cmd, args, path) {
   if (!path) {
@@ -35,7 +38,21 @@ function parseVars(vars) {
   throw new Error("Parameter Vars not in a recognized format.");
 }
 
+async function makeVarFile(secretVarFile, workDir) {
+  if (!secretVarFile || !workDir) {
+    throw new Error("Both content for the Terraform vars file and a working directory are required.");
+  }
+  let svf = secretVarFile;
+  if (!svf.endsWith("\n")) {
+    svf += "\n";
+  }
+  const svfName = `temp-9bxY9f-${uuidv4()}.tfvars`; // e.g. temp-9bxY9f-d2c714eb-9b9f-49b0-844f-34810262a4c9.tfvars
+  const svfPath = pathmodule.join(workDir, svfName);
+  await fs.promises.writeFile(svfPath, svf);
+}
+
 module.exports = {
   execTerraform,
   parseVars,
+  makeVarFile,
 };

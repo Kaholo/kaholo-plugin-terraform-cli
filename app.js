@@ -1,4 +1,4 @@
-const { execTerraform, parseVars } = require("./helpers");
+const { execTerraform, parseVars, makeVarFile } = require("./helpers");
 
 async function executeTerraformInit(action, settings) {
   return exeTf("init", action, settings);
@@ -17,8 +17,9 @@ async function executeTerraformDestroy(action, settings) {
 }
 
 async function exeTf(mode, action, settings) {
-  const path = action.params.workingDirectory || settings.workingDirectory;
+  const workDir = action.params.workingDirectory || settings.workingDirectory;
   let args;
+
   if (mode === "init") {
     args = action.params.upgrade ? ["-upgrade"] : [];
   } else {
@@ -33,7 +34,20 @@ async function exeTf(mode, action, settings) {
   if (action.params.options) {
     args.push(action.params.options);
   }
-  return execTerraform(mode, args, path);
+  if (action.params.secretVarFile) {
+    const svfName = await makeVarFile(action.params.secretVarFile, workDir);
+    args.push(`-var-file="${svfName}"`);
+    // this securely deletes any files matching temp-9bxY9f-* in the working directory
+    const shredArray = [
+      "temp9bxY9fcount=$(ls | grep temp-9bxY9f- | wc -l)", // count them
+      "if [ $temp9bxY9fcount -gt 0 ]", // if any exist
+      "then shred -n 3 -z -u temp-9bxY9f-*", // shred them
+      "fi",
+    ];
+    const shredCmd = shredArray.join("; ");
+    args.push(`; ${shredCmd}`);
+  }
+  return execTerraform(mode, args, workDir);
 }
 
 module.exports = {

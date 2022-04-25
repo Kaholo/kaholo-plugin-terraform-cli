@@ -10,8 +10,9 @@
   "author": "Kaholo Team",
   "license": "ISC",
   "dependencies": {
-    "package.json": "2.0.1",
-    "uuid": "8.3.2"
+    "kaholo-plugin-library": "Kaholo/kaholo-plugin-library",
+    "mktemp": "1.0.0",
+    "shredfile": "^1.1.0"
   },
   "devDependencies": {
     "eslint": "8.10.0",

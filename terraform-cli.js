@@ -4,12 +4,12 @@ const {
 } = require("./helpers");
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
 
-function createDockerTerraformCommand({ mountVolume = false, mountVariables = false }) {
+function createDockerTerraformCommand({ mountTerraformDir = false, mountVariables = false }) {
   return `
     docker run \
     -e TERRAFORM_COMMAND \
     -e TERRAFORM_DIR \
-    ${mountVolume ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : ""} \
+    ${mountTerraformDir ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : ""} \
     ${mountVariables ? "-v $TERRAFORM_VAR_FILE:$TERRAFORM_VAR_FILE_MOUNT_POINT" : ""} \
     --rm ${TERRAFORM_DOCKER_IMAGE} \
     $TERRAFORM_COMMAND
@@ -54,7 +54,7 @@ async function execute({
   env.set("TERRAFORM_COMMAND", terraformCommand);
 
   const dockerCommand = createDockerTerraformCommand({
-    mountVolume: Boolean(workingDirectory),
+    mountTerraformDir: Boolean(workingDirectory),
     mountVariables: Boolean(variables),
   });
 

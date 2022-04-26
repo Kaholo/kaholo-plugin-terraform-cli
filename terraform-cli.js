@@ -1,6 +1,12 @@
 const {
-  validateDirectoryPath, convertMapToObject, randomTmpName,
-  exec, createTemporaryFile, shredTerraformVarFiles, tryParseTerraformJsonOutput, isJsonAllowed,
+  validateDirectoryPath,
+  convertMapToObject,
+  randomTmpName,
+  exec,
+  createTemporaryFile,
+  shredTerraformVarFiles,
+  tryParseTerraformJsonOutput,
+  isJsonAllowed,
 } = require("./helpers");
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
 
@@ -33,7 +39,10 @@ function constructTerraformCommand(baseCommand, { workingDirectory, variableFile
 }
 
 async function execute({
-  workingDirectory, command, variables, pluckStdout = false,
+  workingDirectory,
+  command,
+  variables,
+  pluckStdout = false,
 }) {
   const env = new Map();
   if (workingDirectory) {

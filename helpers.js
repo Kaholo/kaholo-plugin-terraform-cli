@@ -1,7 +1,10 @@
 const childProcess = require("child_process");
 const { promisify } = require("util");
 const {
-  access, lstat, readFile, writeFile,
+  access,
+  lstat,
+  readFile,
+  writeFile,
 } = require("fs/promises");
 const { resolve } = require("path");
 const mktemp = require("mktemp");
@@ -10,7 +13,10 @@ const ShredFile = require("shredfile");
 const exec = promisify(childProcess.exec);
 
 async function createVariablesText({
-  varFile, variables, secretVariables, workingDirectory,
+  varFile,
+  variables,
+  secretVariables,
+  workingDirectory,
 }) {
   let variablesText = "";
   if (varFile) {

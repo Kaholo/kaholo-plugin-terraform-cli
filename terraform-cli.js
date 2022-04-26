@@ -13,8 +13,6 @@ const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
 function createDockerTerraformCommand({ mountTerraformDir = false, mountVariables = false }) {
   return `
     docker run \
-    -e TERRAFORM_COMMAND \
-    -e TERRAFORM_DIR \
     ${mountTerraformDir ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : ""} \
     ${mountVariables ? "-v $TERRAFORM_VAR_FILE:$TERRAFORM_VAR_FILE_MOUNT_POINT" : ""} \
     --rm ${TERRAFORM_DOCKER_IMAGE} \

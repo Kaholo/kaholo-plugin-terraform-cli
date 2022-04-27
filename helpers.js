@@ -41,7 +41,10 @@ async function createVariablesText({
     variablesText += variables;
     variablesText += "\n";
   }
-  return `${variablesText.trim()}\n`;
+  if (variablesText.length) {
+    variablesText = `${variablesText.trim()}\n`;
+  }
+  return variablesText;
 }
 
 async function createTemporaryFile(content) {

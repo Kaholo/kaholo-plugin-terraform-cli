@@ -7,22 +7,22 @@ const {
   shredTerraformVarFiles,
   tryParseTerraformJsonOutput,
   isJsonAllowed,
+  logToActivityLog,
 } = require("./helpers");
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
 
 function createDockerTerraformCommand({ mountTerraformDir = false, mountVariables = false }) {
   return `
-    docker run \
+    docker run --rm \
     ${mountTerraformDir ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : ""} \
     ${mountVariables ? "-v $TERRAFORM_VAR_FILE:$TERRAFORM_VAR_FILE_MOUNT_POINT" : ""} \
-    --rm ${TERRAFORM_DOCKER_IMAGE} \
-    $TERRAFORM_COMMAND
+    ${TERRAFORM_DOCKER_IMAGE} $TERRAFORM_COMMAND
   `.trim();
 }
 
-function constructTerraformCommand(baseCommand, { workingDirectory, variableFile }) {
+function constructTerraformCommand(baseCommand, { workingDirectory, variableFile, json }) {
   const command = baseCommand.startsWith("terraform ") ? baseCommand.substring(10) : baseCommand;
-  const postArgs = [];
+  const postArgs = ["-no-color"];
   const preArgs = [];
   if (workingDirectory) {
     preArgs.push(`-chdir=${workingDirectory}`);
@@ -30,7 +30,7 @@ function constructTerraformCommand(baseCommand, { workingDirectory, variableFile
   if (variableFile) {
     postArgs.push(`-var-file=${variableFile}`);
   }
-  if (isJsonAllowed(command)) {
+  if (json && isJsonAllowed(command)) {
     postArgs.push("-json");
   }
   return `${preArgs.join(" ")} ${command} ${postArgs.join(" ")}`.trim();
@@ -40,6 +40,7 @@ async function execute({
   workingDirectory,
   command,
   variables,
+  rawOutput,
   pluckStdout = false,
 }) {
   const env = new Map();
@@ -57,8 +58,10 @@ async function execute({
   const terraformCommand = constructTerraformCommand(command, {
     workingDirectory: env.get("TERRAFORM_DIR_MOUNT_POINT"),
     variableFile: env.get("TERRAFORM_VAR_FILE_MOUNT_POINT"),
+    json: !rawOutput,
   });
   env.set("TERRAFORM_COMMAND", terraformCommand);
+  logToActivityLog(`Generated Terraform command: ${terraformCommand}`);
 
   const dockerCommand = createDockerTerraformCommand({
     mountTerraformDir: Boolean(workingDirectory),
@@ -79,7 +82,7 @@ async function execute({
       await shredTerraformVarFiles();
     }
   }
-  result.stdout = tryParseTerraformJsonOutput(result.stdout);
+  result.stdout = rawOutput ? { rawOutput: result.stdout.split("\n") } : tryParseTerraformJsonOutput(result.stdout);
   return pluckStdout ? result.stdout : result;
 }
 

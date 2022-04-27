@@ -12,6 +12,13 @@ const ShredFile = require("shredfile");
 
 const exec = promisify(childProcess.exec);
 
+function logToActivityLog(message) {
+  // TODO: Change console.error to console.info
+  // Right now (Kaholo v4.1.2.1) console.info
+  // does not print messages to Activity Log
+  console.error(message);
+}
+
 async function createVariablesText({
   varFile,
   variables,
@@ -139,4 +146,5 @@ module.exports = {
   tryParseTerraformJsonOutput,
   exec,
   isJsonAllowed,
+  logToActivityLog,
 };

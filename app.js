@@ -13,22 +13,21 @@ async function runMainCommand(params) {
   if (!params.workingDirectory) {
     throw new Error("Working Directory is required for this command.");
   }
-  const args = [];
+  const additionalArgs = [].concat(params.additionalArgs);
   if (params.mode === "destroy" || params.mode === "apply") {
-    args.push("--auto-approve");
+    additionalArgs.push("--auto-approve");
   }
-  const command = `${params.mode} ${args.join(" ")}`.trim();
   return runCommand({
     ...params,
-    command,
+    command: params.mode,
+    additionalArgs,
   });
 }
 
 async function runCommand(params) {
   const variables = await createVariablesText(params);
   return terraformCli.execute({
-    command: params.command,
-    workingDirectory: params.workingDirectory,
+    ...params,
     variables,
     pluckStdout: true,
   });

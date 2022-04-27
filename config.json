@@ -27,7 +27,7 @@
     },
     {
       "name": "runMainCommand",
-      "viewName": "Run Terraform Main Command",
+      "viewName": "Run Main Terraform Command",
       "params": [
         {
           "name": "mode",
@@ -50,6 +50,10 @@
             {
               "id": "destroy",
               "name": "Destroy"
+            },
+            {
+              "id": "validate",
+              "name": "Validate"
             }
           ]
         },
@@ -79,15 +83,21 @@
           "name": "varFile",
           "viewName": "Var File",
           "type": "string",
-          "description": "Load variable values from the given file",
+          "description": "Load variable values from the given file.",
           "placeholder": "/home/user/tmp/vars_file.json",
           "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
+        },
+        {
+          "name": "rawOutput",
+          "viewName": "Raw Output",
+          "description": "Execute Terraform command without the \"-json\" flag.",
+          "type": "boolean"
         }
       ]
     },
     {
       "name": "runCommand",
-      "viewName": "Run Terraform Command",
+      "viewName": "Run Any Terraform Command",
       "params": [
         {
           "name": "command",
@@ -102,16 +112,7 @@
           "viewName": "Working Directory",
           "type": "string",
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
-          "placeholder": "/home/user/tmp/",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/init"
-        },
-        {
-          "name": "variables",
-          "viewName": "Vars",
-          "type": "text",
-          "description": "Set values for input variables in the root module of the configuration, either key=value items separated by new line or as a JSON object.",
-          "placeholder": "region=ap-northwest-1\nsize=xlarge",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
+          "placeholder": "/home/user/tmp/"
         },
         {
           "name": "secretVariables",
@@ -120,12 +121,10 @@
           "description": "Same as parameter \"Vars\" but from Kaholo vault."
         },
         {
-          "name": "varFile",
-          "viewName": "Var File",
-          "type": "string",
-          "description": "Load variable values from the given file",
-          "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
+          "name": "rawOutput",
+          "viewName": "Raw Output",
+          "description": "Execute Terraform command without the \"-json\" flag.",
+          "type": "boolean"
         }
       ]
     }

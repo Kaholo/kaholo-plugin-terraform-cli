@@ -24,7 +24,7 @@ function constructTerraformCommand(baseCommand, {
   workingDirectory,
   variableFile,
   json,
-  additionalArgs,
+  additionalArgs = [],
 }) {
   const command = baseCommand.startsWith("terraform ") ? baseCommand.substring(10) : baseCommand;
   const postArgs = [...additionalArgs, "-no-color"];

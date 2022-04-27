@@ -89,7 +89,7 @@ async function execute({
       await shredTerraformVarFiles();
     }
   }
-  result.stdout = rawOutput ? { rawOutput: result.stdout.split("\n") } : tryParseTerraformJsonOutput(result.stdout);
+  result.stdout = tryParseTerraformJsonOutput(result.stdout);
   return pluckStdout ? result.stdout : result;
 }
 

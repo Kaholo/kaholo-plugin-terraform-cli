@@ -20,9 +20,14 @@ function createDockerTerraformCommand({ mountTerraformDir = false, mountVariable
   `.trim();
 }
 
-function constructTerraformCommand(baseCommand, { workingDirectory, variableFile, json }) {
+function constructTerraformCommand(baseCommand, {
+  workingDirectory,
+  variableFile,
+  json,
+  additionalArgs,
+}) {
   const command = baseCommand.startsWith("terraform ") ? baseCommand.substring(10) : baseCommand;
-  const postArgs = ["-no-color"];
+  const postArgs = [...additionalArgs, "-no-color"];
   const preArgs = [];
   if (workingDirectory) {
     preArgs.push(`-chdir=${workingDirectory}`);
@@ -41,6 +46,7 @@ async function execute({
   command,
   variables,
   rawOutput,
+  additionalArgs,
   pluckStdout = false,
 }) {
   const env = new Map();
@@ -59,6 +65,7 @@ async function execute({
     workingDirectory: env.get("TERRAFORM_DIR_MOUNT_POINT"),
     variableFile: env.get("TERRAFORM_VAR_FILE_MOUNT_POINT"),
     json: !rawOutput,
+    additionalArgs,
   });
   env.set("TERRAFORM_COMMAND", terraformCommand);
   logToActivityLog(`Generated Terraform command: ${terraformCommand}`);

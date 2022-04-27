@@ -13,9 +13,9 @@ async function runMainCommand(params) {
   if (!params.workingDirectory) {
     throw new Error("Working Directory is required for this command.");
   }
-  const additionalArgs = [].concat(params.additionalArgs);
+  const additionalArgs = [];
   if (params.mode === "destroy" || params.mode === "apply") {
-    additionalArgs.push("--auto-approve");
+    additionalArgs.push("-auto-approve");
   }
   return runCommand({
     ...params,

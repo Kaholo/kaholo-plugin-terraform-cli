@@ -55,13 +55,18 @@ async function createVariablesText({
   return variablesText;
 }
 
+async function getCurrentUserId() {
+  const { stdout: userId } = await exec("id -u");
+  return userId.trim();
+}
+
 async function createTemporaryFile(content) {
   const fileName = await createRandomTmpFile();
   await writeFile(fileName, content);
   return fileName;
 }
 
-async function shredTerraformVarFiles() {
+async function shredTerraformVarFile(filepath) {
   const shredder = new ShredFile({
     shredPath: await getShredPath(),
     remove: true,
@@ -70,12 +75,7 @@ async function shredTerraformVarFiles() {
     debugMode: false,
     iterations: 4,
   });
-  return shredder.shred(await getAllTmpTerraformVarFiles());
-}
-
-async function getAllTmpTerraformVarFiles() {
-  const { stdout: result } = await exec("ls /tmp | grep .tfvars");
-  return result.trim().split("\n").map((file) => `/tmp/${file}`);
+  return shredder.shred(filepath);
 }
 
 function getShredPath() {
@@ -84,7 +84,6 @@ function getShredPath() {
 
 function isJsonAllowed(command) {
   const subcommand = command.split(" ").find((arg) => !arg.startsWith("-"));
-  // TODO: Check every subcommand if they support "-json" argument
   const subcommandsJsonNotSupported = ["init"];
   return !subcommandsJsonNotSupported.includes(subcommand);
 }
@@ -114,8 +113,8 @@ function randomTmpName() {
   return `/tmp/${Math.random().toString(36).slice(2)}`;
 }
 
-async function createRandomTmpFile() {
-  return mktemp.createFile(`${randomTmpName()}.tfvars`);
+function createRandomTmpFile() {
+  return mktemp.createFile(randomTmpName());
 }
 
 async function pathExists(path) {
@@ -143,9 +142,10 @@ module.exports = {
   randomTmpName,
   createVariablesText,
   createTemporaryFile,
-  shredTerraformVarFiles,
+  shredTerraformVarFile,
   tryParseTerraformJsonOutput,
   exec,
   isJsonAllowed,
   logToActivityLog,
+  getCurrentUserId,
 };

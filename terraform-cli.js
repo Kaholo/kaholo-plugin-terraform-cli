@@ -4,16 +4,19 @@ const {
   randomTmpName,
   exec,
   createTemporaryFile,
-  shredTerraformVarFiles,
+  shredTerraformVarFile,
   tryParseTerraformJsonOutput,
   isJsonAllowed,
   logToActivityLog,
+  getCurrentUserId,
 } = require("./helpers");
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
 
-function createDockerTerraformCommand({ mountTerraformDir = false, mountVariables = false }) {
+async function createDockerTerraformCommand({ mountTerraformDir = false, mountVariables = false }) {
+  const user = await getCurrentUserId();
   return `
     docker run --rm \
+    --user ${user} \
     ${mountTerraformDir ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : ""} \
     ${mountVariables ? "-v $TERRAFORM_VAR_FILE:$TERRAFORM_VAR_FILE_MOUNT_POINT" : ""} \
     ${TERRAFORM_DOCKER_IMAGE} $TERRAFORM_COMMAND
@@ -70,7 +73,7 @@ async function execute({
   env.set("TERRAFORM_COMMAND", terraformCommand);
   logToActivityLog(`Generated Terraform command: ${terraformCommand}`);
 
-  const dockerCommand = createDockerTerraformCommand({
+  const dockerCommand = await createDockerTerraformCommand({
     mountTerraformDir: Boolean(workingDirectory),
     mountVariables: Boolean(variables),
   });
@@ -86,7 +89,7 @@ async function execute({
     }
   } finally {
     if (env.has("TERRAFORM_VAR_FILE")) {
-      await shredTerraformVarFiles();
+      await shredTerraformVarFile(env.get("TERRAFORM_VAR_FILE"));
     }
   }
   result.stdout = tryParseTerraformJsonOutput(result.stdout);

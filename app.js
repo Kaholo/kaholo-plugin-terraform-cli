@@ -1,5 +1,5 @@
 const { bootstrap } = require("kaholo-plugin-library");
-const { createVariablesText } = require("./helpers");
+const { createVariablesString } = require("./helpers");
 const terraformCli = require("./terraform-cli");
 
 async function getTerraformVersion() {
@@ -25,7 +25,7 @@ async function runMainCommand(params) {
 }
 
 async function runCommand(params) {
-  const variables = await createVariablesText(params);
+  const variables = await createVariablesString(params);
   return terraformCli.execute({
     ...params,
     variables,

@@ -1,14 +1,14 @@
 const {
   validateDirectoryPath,
   convertMapToObject,
-  randomTmpName,
-  exec,
-  createTemporaryFile,
+  generateRandomTemporaryPath,
+  saveToRandomTemporaryFile,
   shredTerraformVarFile,
   tryParseTerraformJsonOutput,
   isJsonAllowed,
   logToActivityLog,
   getCurrentUserId,
+  exec,
 } = require("./helpers");
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
 
@@ -52,25 +52,25 @@ async function execute({
   additionalArgs,
   pluckStdout = false,
 }) {
-  const env = new Map();
+  const environmentVariables = new Map();
   if (workingDirectory) {
     await validateDirectoryPath(workingDirectory);
-    env.set("TERRAFORM_DIR", workingDirectory);
-    env.set("TERRAFORM_DIR_MOUNT_POINT", randomTmpName());
+    environmentVariables.set("TERRAFORM_DIR", workingDirectory);
+    environmentVariables.set("TERRAFORM_DIR_MOUNT_POINT", generateRandomTemporaryPath());
   }
   if (variables) {
-    const fileName = await createTemporaryFile(variables);
-    env.set("TERRAFORM_VAR_FILE", fileName);
-    env.set("TERRAFORM_VAR_FILE_MOUNT_POINT", randomTmpName());
+    const fileName = await saveToRandomTemporaryFile(variables);
+    environmentVariables.set("TERRAFORM_VAR_FILE", fileName);
+    environmentVariables.set("TERRAFORM_VAR_FILE_MOUNT_POINT", generateRandomTemporaryPath());
   }
 
   const terraformCommand = createTerraformCommand(command, {
-    workingDirectory: env.get("TERRAFORM_DIR_MOUNT_POINT"),
-    variableFile: env.get("TERRAFORM_VAR_FILE_MOUNT_POINT"),
+    workingDirectory: environmentVariables.get("TERRAFORM_DIR_MOUNT_POINT"),
+    variableFile: environmentVariables.get("TERRAFORM_VAR_FILE_MOUNT_POINT"),
     json: !rawOutput,
     additionalArgs,
   });
-  env.set("TERRAFORM_COMMAND", terraformCommand);
+  environmentVariables.set("TERRAFORM_COMMAND", terraformCommand);
   logToActivityLog(`Generated Terraform command: ${terraformCommand}`);
 
   const dockerCommand = await createDockerCommand({
@@ -80,7 +80,7 @@ async function execute({
 
   let result;
   try {
-    result = await exec(dockerCommand, { env: convertMapToObject(env) });
+    result = await exec(dockerCommand, { env: convertMapToObject(environmentVariables) });
   } catch (error) {
     if (error.stdout) {
       throw tryParseTerraformJsonOutput(error.stdout);
@@ -88,8 +88,8 @@ async function execute({
       throw new Error(error.stderr ?? error.message ?? error);
     }
   } finally {
-    if (env.has("TERRAFORM_VAR_FILE")) {
-      await shredTerraformVarFile(env.get("TERRAFORM_VAR_FILE"));
+    if (environmentVariables.has("TERRAFORM_VAR_FILE")) {
+      await shredTerraformVarFile(environmentVariables.get("TERRAFORM_VAR_FILE"));
     }
   }
   result.stdout = tryParseTerraformJsonOutput(result.stdout);

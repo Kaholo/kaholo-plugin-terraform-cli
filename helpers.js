@@ -6,8 +6,7 @@ const {
   readFile,
   writeFile,
 } = require("fs/promises");
-const { resolve } = require("path");
-const mktemp = require("mktemp");
+const { resolve: resolvePath } = require("path");
 const ShredFile = require("shredfile");
 
 const exec = promisify(childProcess.exec);
@@ -20,7 +19,7 @@ function logToActivityLog(message) {
   console.error(message);
 }
 
-async function createVariablesText({
+async function createVariablesString({
   varFile,
   variables,
   secretVariables,
@@ -29,7 +28,7 @@ async function createVariablesText({
   let variablesText = "";
   if (varFile) {
     const resolvedVarFilePath = workingDirectory
-      ? resolve(workingDirectory, varFile)
+      ? resolvePath(workingDirectory, varFile)
       : varFile;
     if (!await pathExists(resolvedVarFilePath)) {
       throw new Error(`Variable File path "${resolvedVarFilePath}" does not exist!`);
@@ -55,13 +54,8 @@ async function createVariablesText({
   return variablesText;
 }
 
-async function getCurrentUserId() {
-  const { stdout: userId } = await exec("id -u");
-  return userId.trim();
-}
-
-async function createTemporaryFile(content) {
-  const fileName = await createRandomTmpFile();
+async function saveToRandomTemporaryFile(content) {
+  const fileName = generateRandomTemporaryPath();
   await writeFile(fileName, content);
   return fileName;
 }
@@ -78,8 +72,14 @@ async function shredTerraformVarFile(filepath) {
   return shredder.shred(filepath);
 }
 
-function getShredPath() {
-  return exec("which shred").then(({ stdout }) => stdout.trim());
+async function getCurrentUserId() {
+  const { stdout } = await exec("id -u");
+  return stdout.trim();
+}
+
+async function getShredPath() {
+  const { stdout } = await exec("which shred");
+  return stdout.trim();
 }
 
 function isJsonAllowed(command) {
@@ -109,12 +109,8 @@ function convertMapToObject(map) {
   return Object.fromEntries(map.entries());
 }
 
-function randomTmpName() {
+function generateRandomTemporaryPath() {
   return `/tmp/${Math.random().toString(36).slice(2)}`;
-}
-
-function createRandomTmpFile() {
-  return mktemp.createFile(randomTmpName());
 }
 
 async function pathExists(path) {
@@ -139,9 +135,9 @@ async function isPathFile(path) {
 module.exports = {
   validateDirectoryPath,
   convertMapToObject,
-  randomTmpName,
-  createVariablesText,
-  createTemporaryFile,
+  generateRandomTemporaryPath,
+  createVariablesString,
+  saveToRandomTemporaryFile,
   shredTerraformVarFile,
   tryParseTerraformJsonOutput,
   exec,

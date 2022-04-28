@@ -11,7 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "kaholo-plugin-library": "Kaholo/kaholo-plugin-library#v1.0.2",
-    "mktemp": "1.0.0",
     "shredfile": "1.1.0"
   },
   "devDependencies": {

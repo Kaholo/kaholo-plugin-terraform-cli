@@ -12,7 +12,7 @@ const {
 } = require("./helpers");
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
 
-async function createDockerTerraformCommand({ mountTerraformDir = false, mountVariables = false }) {
+async function createDockerCommand({ mountTerraformDir = false, mountVariables = false }) {
   const user = await getCurrentUserId();
   return `
     docker run --rm \
@@ -23,7 +23,7 @@ async function createDockerTerraformCommand({ mountTerraformDir = false, mountVa
   `.trim();
 }
 
-function constructTerraformCommand(baseCommand, {
+function createTerraformCommand(baseCommand, {
   workingDirectory,
   variableFile,
   json,
@@ -64,7 +64,7 @@ async function execute({
     env.set("TERRAFORM_VAR_FILE_MOUNT_POINT", randomTmpName());
   }
 
-  const terraformCommand = constructTerraformCommand(command, {
+  const terraformCommand = createTerraformCommand(command, {
     workingDirectory: env.get("TERRAFORM_DIR_MOUNT_POINT"),
     variableFile: env.get("TERRAFORM_VAR_FILE_MOUNT_POINT"),
     json: !rawOutput,
@@ -73,7 +73,7 @@ async function execute({
   env.set("TERRAFORM_COMMAND", terraformCommand);
   logToActivityLog(`Generated Terraform command: ${terraformCommand}`);
 
-  const dockerCommand = await createDockerTerraformCommand({
+  const dockerCommand = await createDockerCommand({
     mountTerraformDir: Boolean(workingDirectory),
     mountVariables: Boolean(variables),
   });

@@ -4,7 +4,7 @@
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
-  "version": "1.1.3",
+  "version": "2.0.0",
   "description": "Kaholo plugin for integration with Terraform CLI.",
   "imgUrl": "logo.png",
   "category": ["INFRASTRUCTURE MGMT", "CI/CD"],
@@ -21,42 +21,52 @@
   ],
   "methods": [
     {
-      "name": "executeTerraformInit",
-      "viewName": "Init",
+      "name": "getTerraformVersion",
+      "viewName": "Get Terraform Version",
+      "params": []
+    },
+    {
+      "name": "runMainCommand",
+      "viewName": "Run Main Terraform Command",
       "params": [
         {
-          "name": "workingDirectory",
-          "viewName": "Working Directory",
-          "type": "string",
+          "name": "mode",
+          "viewName": "Mode",
           "required": true,
-          "description": "This is the location where Terraform will expect to find an inventory and execution script.",
-          "placeholder": "/home/user/tmp/",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/init.html"
+          "type": "options",
+          "options": [
+            {
+              "id": "init",
+              "name": "Init"
+            },
+            {
+              "id": "plan",
+              "name": "Plan"
+            },
+            {
+              "id": "apply",
+              "name": "Apply"
+            },
+            {
+              "id": "destroy",
+              "name": "Destroy"
+            },
+            {
+              "id": "validate",
+              "name": "Validate"
+            }
+          ]
         },
-        {
-          "name": "upgrade",
-          "viewName": "Upgrade",
-          "type": "boolean",
-          "description": "Install the latest module and provider versions allowed within configured constraints",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/0.13upgrade.html"
-        }
-      ]
-    },
-    {
-      "name": "executeTerraformApply",
-      "viewName": "Apply",
-      "params": [
         {
           "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
-          "required": false,
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/apply.html"
+          "learnUrl": "https://www.terraform.io/docs/cli/commands/init"
         },
         {
-          "name": "vars",
+          "name": "variables",
           "viewName": "Vars",
           "type": "text",
           "description": "Set values for input variables in the root module of the configuration, either key=value items separated by new line or as a JSON object.",
@@ -64,119 +74,57 @@
           "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
         },
         {
+          "name": "secretVariables",
+          "viewName": "Secret Vars",
+          "type": "vault",
+          "description": "Same as parameter \"Vars\" but from Kaholo vault."
+        },
+        {
           "name": "varFile",
           "viewName": "Var File",
           "type": "string",
-          "description": "Load variable values from the given file",
+          "description": "Load variable values from the given file.",
           "placeholder": "/home/user/tmp/vars_file.json",
           "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
-          "name": "secretVarFile",
-          "viewName": "Secret Var File",
-          "type": "vault",
-          "description": "Same as parameter \"Var File\" but from the Kaholo Vault",
-          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
-        },
-        {
-          "name": "options",
-          "viewName": "Other Options",
-          "type": "string",
-          "description": "Other optional arguments pass to the Terraform command.",
-          "placeholder": "-compact-warnings",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/apply.html"
+          "name": "rawOutput",
+          "viewName": "Raw Output",
+          "description": "Execute Terraform command without the \"-json\" flag.",
+          "type": "boolean"
         }
       ]
     },
     {
-      "name": "executeTerraformPlan",
-      "viewName": "Plan",
+      "name": "runCommand",
+      "viewName": "Run Any Terraform Command",
       "params": [
+        {
+          "name": "command",
+          "viewName": "Command",
+          "type": "string",
+          "description": "Terraform command to execute in the docker container.",
+          "placeholder": "show",
+          "required": true
+        },
         {
           "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
-          "required": false,
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
-          "placeholder": "/home/user/tmp/",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/plan.html"
+          "placeholder": "/home/user/tmp/"
         },
         {
-          "name": "vars",
-          "viewName": "Vars",
-          "type": "text",
-          "description": "Set values for input variables in the root module of the configuration, either key=value items separated by new line or as a JSON object.",
-          "placeholder": "region=ap-northwest-1\nsize=xlarge",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
-        },
-        {
-          "name": "varFile",
-          "viewName": "Var File",
-          "type": "string",
-          "description": "Load variable values from the given file",
-          "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
-        },
-        {
-          "name": "secretVarFile",
-          "viewName": "Secret Var File",
+          "name": "secretVariables",
+          "viewName": "Secret Vars",
           "type": "vault",
-          "description": "Same as parameter \"Var File\" but from the Kaholo Vault",
-          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
+          "description": "Same as parameter \"Vars\" but from Kaholo vault."
         },
         {
-          "name": "options",
-          "viewName": "Other Options",
-          "type": "string",
-          "description": "Other optional arguments pass to the Terraform command.",
-          "placeholder": "-compact-warnings",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/plan.html"
-        }
-      ]
-    },
-    {
-      "name": "executeTerraformDestroy",
-      "viewName": "Destroy",
-      "params": [
-        {
-          "name": "workingDirectory",
-          "viewName": "Working Directory",
-          "type": "string",
-          "required": false,
-          "description": "This is the location where Terraform will expect to find an inventory and execution script.",
-          "placeholder": "/home/user/tmp/",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
-        },
-        {
-          "name": "vars",
-          "viewName": "Vars",
-          "type": "text",
-          "description": "Set values for input variables in the root module of the configuration, either key=value items separated by new line or as a JSON object.",
-          "placeholder": "region=ap-northwest-1\nsize=xlarge",
-          "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
-        },
-        {
-          "name": "varFile",
-          "viewName": "Var File",
-          "type": "string",
-          "description": "Load variable values from the given file",
-          "placeholder": "/home/user/tmp/vars_file.json",
-          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
-        },
-        {
-          "name": "secretVarFile",
-          "viewName": "Secret Var File",
-          "type": "vault",
-          "description": "Same as parameter \"Var File\" but from the Kaholo Vault",
-          "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
-        },
-        {
-          "name": "options",
-          "viewName": "Other Options",
-          "type": "string",
-          "description": "Other optional arguments pass to the Terraform command.",
-          "placeholder": "-compact-warnings",
-          "learnUrl": "https://www.terraform.io/docs/cli/commands/destroy.html"
+          "name": "rawOutput",
+          "viewName": "Raw Output",
+          "description": "Execute Terraform command without the \"-json\" flag.",
+          "type": "boolean"
         }
       ]
     }

@@ -1,58 +1,148 @@
 const childProcess = require("child_process");
-const fs = require("fs");
-const pathmodule = require("path");
-const { v4: uuidv4 } = require("uuid");
+const { promisify } = require("util");
+const {
+  access,
+  lstat,
+  readFile,
+  writeFile,
+} = require("fs/promises");
+const { resolve: resolvePath } = require("path");
+const ShredFile = require("shredfile");
 
-async function execTerraform(cmd, args, path) {
-  if (!path) {
-    throw new Error("Parameter Working Directory is required.");
+const exec = promisify(childProcess.exec);
+
+function logToActivityLog(message) {
+  // TODO: Change console.error to console.info
+  // Right now (Kaholo v4.1.2.1) console.info
+  // does not print messages to Activity Log
+  // Jira ticket: https://kaholo.atlassian.net/browse/KAH-3636
+  console.error(message);
+}
+
+async function createVariablesString({
+  varFile,
+  variables,
+  secretVariables,
+  workingDirectory,
+}) {
+  let variablesText = "";
+  if (varFile) {
+    const resolvedVarFilePath = workingDirectory
+      ? resolvePath(workingDirectory, varFile)
+      : varFile;
+    if (!await pathExists(resolvedVarFilePath)) {
+      throw new Error(`Variable File path "${resolvedVarFilePath}" does not exist!`);
+    }
+    if (!await isPathFile(resolvedVarFilePath)) {
+      throw new Error(`Variable File path "${resolvedVarFilePath}" is not a file!`);
+    }
+    const fileContent = await readFile(resolvedVarFilePath);
+    variablesText += fileContent.toString();
+    variablesText += "\n";
   }
-  const terraCmd = `terraform ${cmd} ${args.join(" ")}`;
-  return new Promise((resolve, reject) => {
-    childProcess.exec(terraCmd, { cwd: path }, (error, stdout, stderr) => {
-      if (error) {
-        return reject(error);
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-      }
-      return resolve(stdout);
-    });
+  if (secretVariables) {
+    variablesText += secretVariables;
+    variablesText += "\n";
+  }
+  if (variables) {
+    variablesText += variables;
+    variablesText += "\n";
+  }
+  if (variablesText.length) {
+    variablesText = `${variablesText.trim()}\n`;
+  }
+  return variablesText;
+}
+
+async function saveToRandomTemporaryFile(content) {
+  const { stdout: mktempOutput } = await exec("mktemp --tmpdir kaholo_terraform_plugin.XXX");
+  const filepath = mktempOutput.trim();
+  await writeFile(filepath, content);
+  return filepath;
+}
+
+async function shredTerraformVarFile(filepath) {
+  const shredder = new ShredFile({
+    shredPath: await getShredPath(),
+    remove: true,
+    force: true,
+    zero: true,
+    debugMode: false,
+    iterations: 4,
   });
+  return shredder.shred(filepath);
 }
 
-function parseVars(vars) {
-  if (!vars) { // if vars is false\undefined return empty arr
-    return [];
-  }
-  if (typeof (vars) === "string") { // if vars is string split vars by new lines
-    return vars.split("\n").map((keyVal) => `-var="${keyVal.trim()}"`);
-  }
-  if (Array.isArray(vars)) { // if vars is an array only add flags
-    return vars.map((keyVal) => `-var="${keyVal}"`);
-  }
-  if (typeof (vars) === "object") { // if vars were passed as an object parse to arg strings
-    return Object.keys(vars).map((key) => `-var="${key}=${vars[key]}"`);
-  }
-  // if vars wasn't passed in a supproted format throw error
-  throw new Error("Parameter Vars not in a recognized format.");
+async function getCurrentUserId() {
+  const { stdout } = await exec("id -u");
+  return stdout.trim();
 }
 
-async function makeVarFile(secretVarFile, workDir) {
-  if (!secretVarFile || !workDir) {
-    throw new Error("Both content for the Terraform vars file and a working directory are required.");
+async function getShredPath() {
+  const { stdout } = await exec("which shred");
+  return stdout.trim();
+}
+
+function isJsonAllowed(command) {
+  const subcommand = command.split(" ").find((arg) => !arg.startsWith("-"));
+  const subcommandsJsonNotSupported = ["init"];
+  return !subcommandsJsonNotSupported.includes(subcommand);
+}
+
+async function validateDirectoryPath(path) {
+  if (!await pathExists(path)) {
+    throw new Error(`Invalid Terraform Directory path! Path ${path} does not exist on agent.`);
   }
-  let svf = secretVarFile;
-  if (!svf.endsWith("\n")) {
-    svf += "\n";
+  if (!await isPathDirectory(path)) {
+    throw new Error(`Invalid Terraform Directory path! Path ${path} is not a directory.`);
   }
-  const svfName = `temp-9bxY9f-${uuidv4()}.tfvars`; // e.g. temp-9bxY9f-d2c714eb-9b9f-49b0-844f-34810262a4c9.tfvars
-  const svfPath = pathmodule.join(workDir, svfName);
-  await fs.promises.writeFile(svfPath, svf);
+}
+
+function tryParseTerraformJsonOutput(terraformOutput) {
+  try {
+    return terraformOutput.trim().split("\n").map((log) => JSON.parse(log));
+  } catch {
+    return { rawOutput: terraformOutput };
+  }
+}
+
+function convertMapToObject(map) {
+  return Object.fromEntries(map.entries());
+}
+
+function generateRandomTemporaryPath() {
+  return `/tmp/${Math.random().toString(36).slice(2)}`;
+}
+
+async function pathExists(path) {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function isPathDirectory(path) {
+  const stat = await lstat(path);
+  return stat.isDirectory();
+}
+
+async function isPathFile(path) {
+  const stat = await lstat(path);
+  return stat.isFile();
 }
 
 module.exports = {
-  execTerraform,
-  parseVars,
-  makeVarFile,
+  validateDirectoryPath,
+  convertMapToObject,
+  generateRandomTemporaryPath,
+  createVariablesString,
+  saveToRandomTemporaryFile,
+  shredTerraformVarFile,
+  tryParseTerraformJsonOutput,
+  exec,
+  isJsonAllowed,
+  logToActivityLog,
+  getCurrentUserId,
 };

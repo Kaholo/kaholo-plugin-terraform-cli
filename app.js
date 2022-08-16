@@ -1,4 +1,4 @@
-const { bootstrap } = require("kaholo-plugin-library");
+const { bootstrap } = require("@kaholo/plugin-library");
 const { createVariablesString } = require("./helpers");
 const terraformCli = require("./terraform-cli");
 

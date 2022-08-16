@@ -55,7 +55,7 @@ async function createVariablesString({
 }
 
 async function saveToRandomTemporaryFile(content) {
-  const { stdout: mktempOutput } = await exec("mktemp --tmpdir kaholo_terraform_plugin.XXX");
+  const { stdout: mktempOutput } = await exec("mktemp -p /tmp kaholo_plugin_library.XXXXXX");
   const filepath = mktempOutput.trim();
   await writeFile(filepath, content);
   return filepath;

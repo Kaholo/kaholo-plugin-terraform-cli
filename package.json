@@ -10,7 +10,7 @@
   "author": "Kaholo Team",
   "license": "ISC",
   "dependencies": {
-    "kaholo-plugin-library": "Kaholo/kaholo-plugin-library#v1.0.2",
+    "@kaholo/plugin-library": "^2.1.2",
     "shredfile": "1.1.0"
   },
   "devDependencies": {

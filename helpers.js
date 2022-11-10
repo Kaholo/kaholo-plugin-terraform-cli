@@ -26,6 +26,7 @@ async function createVariablesString({
   workingDirectory,
 }) {
   let variablesText = "";
+
   if (varFile) {
     const resolvedVarFilePath = workingDirectory
       ? resolvePath(workingDirectory, varFile)
@@ -51,6 +52,7 @@ async function createVariablesString({
   if (variablesText.length) {
     variablesText = `${variablesText.trim()}\n`;
   }
+
   return variablesText;
 }
 
@@ -70,7 +72,8 @@ async function shredTerraformVarFile(filepath) {
     debugMode: false,
     iterations: 4,
   });
-  return shredder.shred(filepath);
+  console.error("Shredding", filepath);
+  return shredder.shred(filepath).catch(console.error);
 }
 
 async function getCurrentUserId() {

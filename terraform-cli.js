@@ -1,3 +1,5 @@
+const { resolve: resolvePath } = require("path");
+
 const {
   validateDirectoryPath,
   convertMapToObject,
@@ -10,6 +12,7 @@ const {
   getCurrentUserId,
   exec,
 } = require("./helpers");
+
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
 
 async function createDockerCommand({
@@ -57,9 +60,10 @@ async function execute({
   pluckStdout = false,
 }) {
   const environmentVariables = new Map();
-  if (workingDirectory) {
-    await validateDirectoryPath(workingDirectory);
-    environmentVariables.set("TERRAFORM_DIR", workingDirectory);
+  const absoluteWorkingDirectory = workingDirectory ? resolvePath(workingDirectory) : "";
+  if (absoluteWorkingDirectory) {
+    await validateDirectoryPath(absoluteWorkingDirectory);
+    environmentVariables.set("TERRAFORM_DIR", absoluteWorkingDirectory);
     environmentVariables.set("TERRAFORM_DIR_MOUNT_POINT", generateRandomTemporaryPath());
   }
   if (variables) {
@@ -77,7 +81,7 @@ async function execute({
   logToActivityLog(`Generated Terraform command: ${terraformCommand}`);
 
   const dockerCommand = await createDockerCommand({
-    mountTerraformDir: Boolean(workingDirectory),
+    mountTerraformDir: Boolean(absoluteWorkingDirectory),
     mountVariables: Boolean(variables),
     terraformCommand,
   });

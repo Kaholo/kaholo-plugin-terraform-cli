@@ -1,4 +1,5 @@
 const { resolve: resolvePath } = require("path");
+const { docker } = require("@kaholo/plugin-library");
 
 const {
   validateDirectoryPath,
@@ -14,21 +15,6 @@ const {
 } = require("./helpers");
 
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
-
-async function createDockerCommand({
-  terraformCommand,
-  mountTerraformDir = false,
-  mountVariables = false,
-}) {
-  const user = await getCurrentUserId();
-  return `
-    docker run --rm \
-    --user ${user} \
-    ${mountTerraformDir ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : ""} \
-    ${mountVariables ? "-v $TERRAFORM_VAR_FILE:$TERRAFORM_VAR_FILE_MOUNT_POINT" : ""} \
-    ${TERRAFORM_DOCKER_IMAGE} ${terraformCommand}
-  `.trim();
-}
 
 function createTerraformCommand(baseCommand, {
   workingDirectory,
@@ -51,10 +37,18 @@ function createTerraformCommand(baseCommand, {
   return `${preArgs.join(" ")} ${command} ${postArgs.join(" ")}`.trim();
 }
 
+function splitVariablesString(secretEnvVariables) {
+  if (secretEnvVariables) {
+    return secretEnvVariables.split(/\s+/);
+  }
+  return null;
+}
+
 async function execute({
   workingDirectory,
   command,
   variables,
+  secretEnvVariables,
   rawOutput,
   additionalArgs,
   pluckStdout = false,
@@ -80,20 +74,27 @@ async function execute({
   });
   logToActivityLog(`Generated Terraform command: ${terraformCommand}`);
 
-  const dockerCommand = await createDockerCommand({
-    mountTerraformDir: Boolean(absoluteWorkingDirectory),
-    mountVariables: Boolean(variables),
-    terraformCommand,
+  const dockerEnvs = splitVariablesString(secretEnvVariables);
+
+  const dockerCommand = docker.buildDockerCommand({
+    image: TERRAFORM_DOCKER_IMAGE,
+    command: terraformCommand,
+    user: await getCurrentUserId(),
+    additionalArguments: [
+      `${absoluteWorkingDirectory ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : ""} \
+       ${variables ? "-v $TERRAFORM_VAR_FILE:$TERRAFORM_VAR_FILE_MOUNT_POINT" : ""} \
+       ${dockerEnvs ? dockerEnvs.reduce((acc, env) => `${acc}-e ${env} `, "") : " "}\
+    `],
   });
 
   let result;
   try {
     result = await exec(dockerCommand, { env: convertMapToObject(environmentVariables) });
   } catch (error) {
-    if (error.stdout) {
-      throw tryParseTerraformJsonOutput(error.stdout);
+    if (error.message) {
+      throw tryParseTerraformJsonOutput(error.message);
     } else {
-      throw new Error(error.stderr ?? error.message ?? error);
+      throw new Error(error.stdout ?? error.stderr ?? error);
     }
   } finally {
     if (environmentVariables.has("TERRAFORM_VAR_FILE")) {

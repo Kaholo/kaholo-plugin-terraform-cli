@@ -128,12 +128,6 @@
           "description": "Same as parameter \"Vars\" but from Kaholo vault."
         },
         {
-          "name": "secretEnvVariables",
-          "viewName": "Secret environment variables",
-          "type": "vault",
-          "description": "One-per-line Key=Value pairs stored as a Kaholo Vault item."
-        },
-        {
           "name": "rawOutput",
           "viewName": "Raw Output",
           "description": "Execute Terraform command without the \"-json\" flag.",

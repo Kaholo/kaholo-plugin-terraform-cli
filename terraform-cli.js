@@ -38,10 +38,16 @@ function createTerraformCommand(baseCommand, {
 }
 
 function splitVariablesString(secretEnvVariables) {
-  if (secretEnvVariables) {
-    return secretEnvVariables.split(/\s+/);
+  if (!secretEnvVariables) {
+    return null;
   }
-  return null;
+
+  const envLines = secretEnvVariables.split("\n");
+  const envEntries = envLines.map((line) => {
+    const [key, ...values] = line.split(/\s+=\s+/);
+    return [key, JSON.parse(values.join("="))];
+  });
+  return Object.fromEntries(envEntries);
 }
 
 async function execute({
@@ -75,20 +81,30 @@ async function execute({
 
   const dockerEnvs = splitVariablesString(secretEnvVariables);
 
-  const dockerCommand = docker.buildDockerCommand({
+  const buildDockerCommandOptions = {
     image: TERRAFORM_DOCKER_IMAGE,
     command: terraformCommand,
     user: await getCurrentUserId(),
     additionalArguments: [
-      `${absoluteWorkingDirectory ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : ""} \
-       ${variables ? "-v $TERRAFORM_VAR_FILE:$TERRAFORM_VAR_FILE_MOUNT_POINT" : ""} \
-       ${dockerEnvs ? dockerEnvs.reduce((acc, env) => `${acc}-e ${env} `, "") : " "}\
-    `],
-  });
+      absoluteWorkingDirectory ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : "",
+      variables ? "-v $TERRAFORM_VAR_FILE:$TERRAFORM_VAR_FILE_MOUNT_POINT" : "",
+    ],
+  };
+
+  if (dockerEnvs) {
+    buildDockerCommandOptions.environmentVariables = dockerEnvs;
+  }
+
+  const dockerCommand = docker.buildDockerCommand(buildDockerCommandOptions);
 
   let result;
   try {
-    result = await exec(dockerCommand, { env: convertMapToObject(environmentVariables) });
+    result = await exec(dockerCommand, {
+      env: {
+        ...convertMapToObject(environmentVariables),
+        ...dockerEnvs,
+      },
+    });
   } catch (error) {
     if (error.message) {
       throw tryParseTerraformJsonOutput(error.message);
@@ -100,6 +116,7 @@ async function execute({
       await shredTerraformVarFile(environmentVariables.get("TERRAFORM_VAR_FILE"));
     }
   }
+
   result.stdout = tryParseTerraformJsonOutput(result.stdout);
   return result.stdout;
 }

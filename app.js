@@ -28,7 +28,6 @@ async function runCommand(params) {
   return terraformCli.execute({
     ...params,
     variables,
-    pluckStdout: true,
   });
 }
 

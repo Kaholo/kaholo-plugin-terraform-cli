@@ -51,7 +51,6 @@ async function execute({
   secretEnvVariables,
   rawOutput,
   additionalArgs,
-  pluckStdout = false,
 }) {
   const environmentVariables = new Map();
   const absoluteWorkingDirectory = workingDirectory ? resolvePath(workingDirectory) : "";
@@ -102,7 +101,7 @@ async function execute({
     }
   }
   result.stdout = tryParseTerraformJsonOutput(result.stdout);
-  return pluckStdout ? result.stdout : result;
+  return result.stdout;
 }
 
 module.exports = {

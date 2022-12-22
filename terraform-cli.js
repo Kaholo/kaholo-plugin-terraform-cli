@@ -106,10 +106,11 @@ async function execute({
       },
     });
   } catch (error) {
-    if (error.message) {
-      throw tryParseTerraformJsonOutput(error.message);
+    if (error.stdout) {
+      const parsedOutput = tryParseTerraformJsonOutput(error.stdout);
+      throw new Error(JSON.stringify(parsedOutput, null, 2));
     } else {
-      throw new Error(error.stdout ?? error.stderr ?? error);
+      throw new Error(error.stderr ?? error.message);
     }
   } finally {
     if (environmentVariables.has("TERRAFORM_VAR_FILE")) {

@@ -105,7 +105,7 @@ function tryParseTerraformJsonOutput(terraformOutput) {
   try {
     return terraformOutput.trim().split("\n").map((log) => JSON.parse(log));
   } catch {
-    return { rawOutput: terraformOutput };
+    return terraformOutput;
   }
 }
 

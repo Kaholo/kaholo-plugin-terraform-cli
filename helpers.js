@@ -72,7 +72,7 @@ async function shredTerraformVarFile(filepath) {
     debugMode: false,
     iterations: 4,
   });
-  console.error("Shredding", filepath);
+  console.error(`\nShredding secrets in ${filepath}\n`);
   return shredder.shred(filepath).catch(console.error);
 }
 

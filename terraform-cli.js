@@ -16,17 +16,12 @@ const {
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
 
 function createTerraformCommand(baseCommand, {
-  workingDirectory,
   variableFile,
   json,
   additionalArgs = [],
 }) {
   const command = baseCommand.startsWith("terraform ") ? baseCommand.substring(10) : baseCommand;
   const postArgs = [...additionalArgs, "-no-color"];
-  const preArgs = [];
-  if (workingDirectory) {
-    preArgs.push("-chdir=$TERRAFORM_DIR_MOUNT_POINT");
-  }
   if (variableFile) {
     postArgs.push("-var-file=$TERRAFORM_VAR_FILE_MOUNT_POINT");
   }
@@ -37,7 +32,7 @@ function createTerraformCommand(baseCommand, {
       console.error("JSON Output is not supported for this Terraform command.");
     }
   }
-  return `${preArgs.join(" ")} ${command} ${postArgs.join(" ")}`;
+  return `${command} ${postArgs.join(" ")}`;
 }
 
 async function execute({
@@ -50,11 +45,10 @@ async function execute({
 }) {
   const environmentVariables = new Map();
   const absoluteWorkingDirectory = workingDirectory ? resolvePath(workingDirectory) : process.cwd();
-  if (absoluteWorkingDirectory) {
-    await validateDirectoryPath(absoluteWorkingDirectory);
-    environmentVariables.set("TERRAFORM_DIR", absoluteWorkingDirectory);
-    environmentVariables.set("TERRAFORM_DIR_MOUNT_POINT", generateRandomTemporaryPath());
-  }
+  await validateDirectoryPath(absoluteWorkingDirectory);
+  environmentVariables.set("TERRAFORM_DIR", absoluteWorkingDirectory);
+  environmentVariables.set("TERRAFORM_DIR_MOUNT_POINT", generateRandomTemporaryPath());
+
   if (variables) {
     const fileName = await saveToRandomTemporaryFile(variables);
     environmentVariables.set("TERRAFORM_VAR_FILE", fileName);
@@ -62,7 +56,6 @@ async function execute({
   }
 
   const terraformCommand = createTerraformCommand(command, {
-    workingDirectory: environmentVariables.has("TERRAFORM_DIR_MOUNT_POINT"),
     variableFile: environmentVariables.has("TERRAFORM_VAR_FILE_MOUNT_POINT"),
     json: !rawOutput,
     additionalArgs,
@@ -75,7 +68,8 @@ async function execute({
     command: terraformCommand,
     user: await getCurrentUserId(),
     additionalArguments: [
-      absoluteWorkingDirectory ? "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT" : "",
+      "-w $TERRAFORM_DIR_MOUNT_POINT",
+      "-v $TERRAFORM_DIR:$TERRAFORM_DIR_MOUNT_POINT",
       variables ? "-v $TERRAFORM_VAR_FILE:$TERRAFORM_VAR_FILE_MOUNT_POINT" : "",
     ],
   };
@@ -96,7 +90,10 @@ async function execute({
       },
     });
   } catch (error) {
-      throw new Error(error.stderr ?? error.message);
+    if (!rawOutput) {
+      console.error("\nRECOMMENDATION: Try enabling parameter Raw Output for a more meaningful error message.\n");
+    }
+    throw new Error(error);
   } finally {
     if (environmentVariables.has("TERRAFORM_VAR_FILE")) {
       await shredTerraformVarFile(environmentVariables.get("TERRAFORM_VAR_FILE"));

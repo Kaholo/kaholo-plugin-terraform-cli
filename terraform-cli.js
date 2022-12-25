@@ -1,5 +1,5 @@
 const { resolve: resolvePath } = require("path");
-const { docker } = require("@kaholo/plugin-library");
+const pluginLib = require("@kaholo/plugin-library");
 
 const {
   validateDirectoryPath,
@@ -9,7 +9,6 @@ const {
   shredTerraformVarFile,
   tryParseTerraformJsonOutput,
   isJsonAllowed,
-  logToActivityLog,
   getCurrentUserId,
   exec,
 } = require("./helpers");
@@ -31,23 +30,14 @@ function createTerraformCommand(baseCommand, {
   if (variableFile) {
     postArgs.push("-var-file=$TERRAFORM_VAR_FILE_MOUNT_POINT");
   }
-  if (json && isJsonAllowed(command)) {
-    postArgs.push("-json");
+  if (json) {
+    if (isJsonAllowed(command)) {
+      postArgs.push("-json");
+    } else {
+      console.error("JSON Output is not supported for this Terraform command.");
+    }
   }
-  return `${preArgs.join(" ")} ${command} ${postArgs.join(" ")}`.trim();
-}
-
-function splitVariablesString(secretEnvVariables) {
-  if (!secretEnvVariables) {
-    return null;
-  }
-
-  const envLines = secretEnvVariables.split("\n");
-  const envEntries = envLines.map((line) => {
-    const [key, ...values] = line.split(/\s+=\s+/);
-    return [key, JSON.parse(values.join("="))];
-  });
-  return Object.fromEntries(envEntries);
+  return `${preArgs.join(" ")} ${command} ${postArgs.join(" ")}`;
 }
 
 async function execute({
@@ -59,7 +49,7 @@ async function execute({
   additionalArgs,
 }) {
   const environmentVariables = new Map();
-  const absoluteWorkingDirectory = workingDirectory ? resolvePath(workingDirectory) : "";
+  const absoluteWorkingDirectory = workingDirectory ? resolvePath(workingDirectory) : process.cwd();
   if (absoluteWorkingDirectory) {
     await validateDirectoryPath(absoluteWorkingDirectory);
     environmentVariables.set("TERRAFORM_DIR", absoluteWorkingDirectory);
@@ -77,9 +67,8 @@ async function execute({
     json: !rawOutput,
     additionalArgs,
   });
-  logToActivityLog(`Generated Terraform command: ${terraformCommand}`);
 
-  const dockerEnvs = splitVariablesString(secretEnvVariables);
+  const dockerEnvs = secretEnvVariables ? pluginLib.parsers.keyValuePairs(secretEnvVariables) : {};
 
   const buildDockerCommandOptions = {
     image: TERRAFORM_DOCKER_IMAGE,
@@ -95,7 +84,8 @@ async function execute({
     buildDockerCommandOptions.environmentVariables = dockerEnvs;
   }
 
-  const dockerCommand = docker.buildDockerCommand(buildDockerCommandOptions);
+  const dockerCommand = pluginLib.docker.buildDockerCommand(buildDockerCommandOptions);
+  // console.error(JSON.stringify(dockerCommand));
 
   let result;
   try {
@@ -106,12 +96,7 @@ async function execute({
       },
     });
   } catch (error) {
-    if (error.stdout) {
-      const parsedOutput = tryParseTerraformJsonOutput(error.stdout);
-      throw new Error(JSON.stringify(parsedOutput, null, 2));
-    } else {
       throw new Error(error.stderr ?? error.message);
-    }
   } finally {
     if (environmentVariables.has("TERRAFORM_VAR_FILE")) {
       await shredTerraformVarFile(environmentVariables.get("TERRAFORM_VAR_FILE"));

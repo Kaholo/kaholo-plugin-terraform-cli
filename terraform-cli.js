@@ -79,7 +79,6 @@ async function execute({
   }
 
   const dockerCommand = pluginLib.docker.buildDockerCommand(buildDockerCommandOptions);
-  // console.error(JSON.stringify(dockerCommand));
 
   let result;
   try {

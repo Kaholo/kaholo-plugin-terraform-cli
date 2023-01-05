@@ -4,7 +4,7 @@
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Kaholo plugin for integration with Terraform CLI.",
   "imgUrl": "logo.png",
   "category": ["INFRASTRUCTURE MGMT", "CI/CD"],
@@ -61,7 +61,7 @@
           "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
-          "required": true,
+          "required": false,
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/init"

@@ -72,7 +72,7 @@ async function shredTerraformVarFile(filepath) {
     debugMode: false,
     iterations: 4,
   });
-  console.error("Shredding", filepath);
+  console.error(`\nShredding secrets in ${filepath}\n`);
   return shredder.shred(filepath).catch(console.error);
 }
 
@@ -105,7 +105,7 @@ function tryParseTerraformJsonOutput(terraformOutput) {
   try {
     return terraformOutput.trim().split("\n").map((log) => JSON.parse(log));
   } catch {
-    return { rawOutput: terraformOutput };
+    return terraformOutput;
   }
 }
 

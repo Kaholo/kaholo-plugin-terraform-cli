@@ -5,7 +5,6 @@ const terraformCli = require("./terraform-cli");
 async function getTerraformVersion() {
   return terraformCli.execute({
     command: "terraform version -json",
-    pluckStdout: true,
   });
 }
 
@@ -28,7 +27,6 @@ async function runCommand(params) {
   return terraformCli.execute({
     ...params,
     variables,
-    pluckStdout: true,
   });
 }
 

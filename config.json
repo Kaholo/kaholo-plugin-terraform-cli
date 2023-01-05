@@ -4,7 +4,7 @@
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Kaholo plugin for integration with Terraform CLI.",
   "imgUrl": "logo.png",
   "category": ["INFRASTRUCTURE MGMT", "CI/CD"],
@@ -61,6 +61,7 @@
           "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
+          "required": false,
           "description": "This is the location where Terraform will expect to find an inventory and execution script.",
           "placeholder": "/home/user/tmp/",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/init"
@@ -78,6 +79,12 @@
           "viewName": "Secret Vars",
           "type": "vault",
           "description": "Same as parameter \"Vars\" but from Kaholo vault."
+        },
+        {
+          "name": "secretEnvVariables",
+          "viewName": "Secret environment variables",
+          "type": "vault",
+          "description": "One-per-line Key=Value pairs stored as a Kaholo Vault item."
         },
         {
           "name": "varFile",

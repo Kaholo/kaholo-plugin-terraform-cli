@@ -7,7 +7,6 @@ const {
   writeFile,
 } = require("fs/promises");
 const { resolve: resolvePath } = require("path");
-const ShredFile = require("shredfile");
 
 const exec = promisify(childProcess.exec);
 
@@ -64,25 +63,12 @@ async function saveToRandomTemporaryFile(content) {
 }
 
 async function shredTerraformVarFile(filepath) {
-  const shredder = new ShredFile({
-    shredPath: await getShredPath(),
-    remove: true,
-    force: true,
-    zero: true,
-    debugMode: false,
-    iterations: 4,
-  });
   console.error(`\nShredding secrets in ${filepath}\n`);
-  return shredder.shred(filepath).catch(console.error);
+  return exec(`shred -u -n 3 -f ${filepath}`);
 }
 
 async function getCurrentUserId() {
   const { stdout } = await exec("id -u");
-  return stdout.trim();
-}
-
-async function getShredPath() {
-  const { stdout } = await exec("which shred");
   return stdout.trim();
 }
 

@@ -13,8 +13,6 @@ const {
   exec,
 } = require("./helpers");
 
-const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
-
 function createTerraformCommand(baseCommand, {
   variableFile,
   json,
@@ -67,7 +65,7 @@ async function execute(params) {
   const dockerEnvs = secretEnvVariables ? pluginLib.parsers.keyValuePairs(secretEnvVariables) : {};
 
   const buildDockerCommandOptions = {
-    image: customDockerImage || TERRAFORM_DOCKER_IMAGE,
+    image: customDockerImage,
     command: terraformCommand,
     user: await getCurrentUserId(),
     additionalArguments: [

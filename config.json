@@ -99,6 +99,12 @@
           "viewName": "Raw Output",
           "description": "Execute Terraform command without the \"-json\" flag.",
           "type": "boolean"
+        },
+        {
+          "name": "customDockerImage",
+          "viewName": "Custom Docker Image",
+          "description": "Provide custom Docker image which will be used instead of the default hashicorp/terraform",
+          "type": "string"
         }
       ]
     },
@@ -132,6 +138,12 @@
           "viewName": "Raw Output",
           "description": "Execute Terraform command without the \"-json\" flag.",
           "type": "boolean"
+        },
+        {
+          "name": "customDockerImage",
+          "viewName": "Custom Docker Image",
+          "description": "Provide custom Docker image which will be used instead of the default hashicorp/terraform",
+          "type": "string"
         }
       ]
     }

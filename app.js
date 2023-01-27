@@ -14,10 +14,16 @@ async function runMainCommand(params) {
     additionalArgs.push("-auto-approve");
   }
 
-  return runCommand({
+  const newParams = {
     ...params,
     command: params.mode,
     additionalArgs,
+  };
+  const variables = await createVariablesString(newParams);
+
+  return terraformCli.execute({
+    ...newParams,
+    variables,
   });
 }
 

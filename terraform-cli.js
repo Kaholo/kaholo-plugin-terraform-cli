@@ -3,14 +3,13 @@ const pluginLib = require("@kaholo/plugin-library");
 
 const {
   validateDirectoryPath,
-  convertMapToObject,
   generateRandomTemporaryPath,
   saveToRandomTemporaryFile,
   shredTerraformVarFile,
   tryParseTerraformJsonOutput,
   isJsonAllowed,
   getCurrentUserId,
-  exec,
+  asyncExec,
 } = require("./helpers");
 
 const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
@@ -22,16 +21,17 @@ function createTerraformCommand(baseCommand, {
 }) {
   const command = baseCommand.startsWith("terraform ") ? baseCommand.substring(10) : baseCommand;
   const postArgs = [...additionalArgs, "-no-color"];
+
   if (variableFile) {
     postArgs.push("-var-file=$TERRAFORM_VAR_FILE_MOUNT_POINT");
   }
-  if (json) {
-    if (isJsonAllowed(command)) {
-      postArgs.push("-json");
-    } else {
-      console.error("JSON Output is not supported for this Terraform command.");
-    }
+
+  if (json && isJsonAllowed(command)) {
+    postArgs.push("-json");
+  } else if (json) {
+    console.error("JSON Output is not supported for this Terraform command.");
   }
+
   return `${command} ${postArgs.join(" ")}`;
 }
 
@@ -80,27 +80,38 @@ async function execute({
 
   const dockerCommand = pluginLib.docker.buildDockerCommand(buildDockerCommandOptions);
 
-  let result;
-  try {
-    result = await exec(dockerCommand, {
+  const {
+    outputChunks,
+    error,
+  } = await asyncExec({
+    command: dockerCommand,
+    onProgressFn: console.info,
+    options: {
       env: {
-        ...convertMapToObject(environmentVariables),
+        ...Object.fromEntries(environmentVariables.entries()),
         ...dockerEnvs,
       },
-    });
-  } catch (error) {
-    if (!rawOutput) {
-      console.error("\nRECOMMENDATION: Try enabling parameter Raw Output for a more meaningful error message.\n");
-    }
-    throw new Error(error);
-  } finally {
-    if (environmentVariables.has("TERRAFORM_VAR_FILE")) {
-      await shredTerraformVarFile(environmentVariables.get("TERRAFORM_VAR_FILE"));
-    }
+    },
+  });
+
+  if (environmentVariables.has("TERRAFORM_VAR_FILE")) {
+    await shredTerraformVarFile(environmentVariables.get("TERRAFORM_VAR_FILE"));
   }
 
-  result.stdout = tryParseTerraformJsonOutput(result.stdout);
-  return result.stdout;
+  if (error) {
+    if (!rawOutput) {
+      console.info("\nRECOMMENDATION: Try enabling parameter Raw Output for a more meaningful error message.\n");
+    }
+    console.error(error);
+    throw new Error(`Command error occurred: ${error.message}`);
+  }
+
+  const stdout = outputChunks
+    .filter(({ type }) => type === "stdout")
+    .map(({ data }) => data.toString())
+    .join("\n");
+
+  return tryParseTerraformJsonOutput(stdout);
 }
 
 module.exports = {

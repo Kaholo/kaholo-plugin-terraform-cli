@@ -8,15 +8,7 @@ const {
 } = require("fs/promises");
 const { resolve: resolvePath } = require("path");
 
-const exec = promisify(childProcess.exec);
-
-function logToActivityLog(message) {
-  // TODO: Change console.error to console.info
-  // Right now (Kaholo v4.1.2.1) console.info
-  // does not print messages to Activity Log
-  // Jira ticket: https://kaholo.atlassian.net/browse/KAH-3636
-  console.error(message);
-}
+const simpleAsyncExec = promisify(childProcess.exec);
 
 async function createVariablesString({
   varFile,
@@ -56,7 +48,7 @@ async function createVariablesString({
 }
 
 async function saveToRandomTemporaryFile(content) {
-  const { stdout: mktempOutput } = await exec("mktemp -p /tmp kaholo_plugin_library.XXXXXX");
+  const { stdout: mktempOutput } = await simpleAsyncExec("mktemp -p /tmp kaholo_plugin_library.XXXXXX");
   const filepath = mktempOutput.trim();
   await writeFile(filepath, content);
   return filepath;
@@ -64,11 +56,11 @@ async function saveToRandomTemporaryFile(content) {
 
 async function shredTerraformVarFile(filepath) {
   console.error(`\nShredding secrets in ${filepath}\n`);
-  return exec(`shred -u -n 3 -f ${filepath}`);
+  return simpleAsyncExec(`shred -u -n 3 -f ${filepath}`);
 }
 
 async function getCurrentUserId() {
-  const { stdout } = await exec("id -u");
+  const { stdout } = await simpleAsyncExec("id -u");
   return stdout.trim();
 }
 
@@ -122,6 +114,41 @@ async function isPathFile(path) {
   return stat.isFile();
 }
 
+async function asyncExec(params) {
+  const {
+    command,
+    options = {},
+    onProgressFn,
+  } = params;
+
+  let childProcessInstance;
+  try {
+    childProcessInstance = childProcess.exec(command, options);
+  } catch (error) {
+    return { error };
+  }
+
+  const outputChunks = [];
+
+  childProcessInstance.stdout.on("data", (data) => {
+    outputChunks.push({ type: "stdout", data });
+
+    onProgressFn?.(data);
+  });
+  childProcessInstance.stderr.on("data", (data) => {
+    outputChunks.push({ type: "stderr", data });
+
+    onProgressFn?.(data);
+  });
+
+  try {
+    await promisify(childProcessInstance.on.bind(childProcessInstance))("close");
+    return { outputChunks };
+  } catch (error) {
+    return { error, outputChunks };
+  }
+}
+
 module.exports = {
   validateDirectoryPath,
   convertMapToObject,
@@ -130,8 +157,7 @@ module.exports = {
   saveToRandomTemporaryFile,
   shredTerraformVarFile,
   tryParseTerraformJsonOutput,
-  exec,
+  asyncExec,
   isJsonAllowed,
-  logToActivityLog,
   getCurrentUserId,
 };

@@ -121,6 +121,7 @@ async function asyncExec(params) {
     onProgressFn,
   } = params;
 
+  let childProcessError;
   let childProcessInstance;
   try {
     childProcessInstance = childProcess.exec(command, options);
@@ -140,13 +141,26 @@ async function asyncExec(params) {
 
     onProgressFn?.(data);
   });
+  childProcessInstance.on("error", (error) => {
+    childProcessError = error;
+  });
 
   try {
     await promisify(childProcessInstance.on.bind(childProcessInstance))("close");
-    return { outputChunks };
   } catch (error) {
-    return { error, outputChunks };
+    childProcessError = error;
   }
+
+  const outputObject = outputChunks.reduce((acc, cur) => ({
+    ...acc,
+    [cur.type]: `${acc[cur.type]}\n${cur.data.toString()}`,
+  }), { stdout: "", stderr: "" });
+
+  if (childProcessError) {
+    outputObject.error = childProcessError;
+  }
+
+  return outputObject;
 }
 
 module.exports = {

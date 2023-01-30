@@ -81,7 +81,7 @@ async function execute({
   const dockerCommand = pluginLib.docker.buildDockerCommand(buildDockerCommandOptions);
 
   const {
-    outputChunks,
+    stdout,
     error,
   } = await asyncExec({
     command: dockerCommand,
@@ -105,11 +105,6 @@ async function execute({
     console.error(error);
     throw new Error(`Command error occurred: ${error.message}`);
   }
-
-  const stdout = outputChunks
-    .filter(({ type }) => type === "stdout")
-    .map(({ data }) => data.toString())
-    .join("\n");
 
   return tryParseTerraformJsonOutput(stdout);
 }

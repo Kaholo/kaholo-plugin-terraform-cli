@@ -4,7 +4,7 @@
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Kaholo plugin for integration with Terraform CLI.",
   "imgUrl": "logo.png",
   "category": ["INFRASTRUCTURE MGMT", "CI/CD"],

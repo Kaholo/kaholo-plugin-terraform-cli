@@ -13,8 +13,6 @@ const {
   exec,
 } = require("./helpers");
 
-const { TERRAFORM_DOCKER_IMAGE } = require("./consts.json");
-
 function createTerraformCommand(baseCommand, {
   variableFile,
   json,
@@ -35,14 +33,17 @@ function createTerraformCommand(baseCommand, {
   return `${command} ${postArgs.join(" ")}`;
 }
 
-async function execute({
-  workingDirectory,
-  command,
-  variables,
-  secretEnvVariables,
-  rawOutput,
-  additionalArgs,
-}) {
+async function execute(params) {
+  const {
+    workingDirectory,
+    command,
+    variables,
+    secretEnvVariables,
+    rawOutput,
+    additionalArgs,
+    customDockerImage,
+  } = params;
+
   const environmentVariables = new Map();
   const absoluteWorkingDirectory = workingDirectory ? resolvePath(workingDirectory) : process.cwd();
   await validateDirectoryPath(absoluteWorkingDirectory);
@@ -64,7 +65,7 @@ async function execute({
   const dockerEnvs = secretEnvVariables ? pluginLib.parsers.keyValuePairs(secretEnvVariables) : {};
 
   const buildDockerCommandOptions = {
-    image: TERRAFORM_DOCKER_IMAGE,
+    image: customDockerImage,
     command: terraformCommand,
     user: await getCurrentUserId(),
     additionalArguments: [

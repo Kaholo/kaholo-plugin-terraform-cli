@@ -70,8 +70,8 @@
           "name": "variables",
           "viewName": "Vars",
           "type": "text",
-          "description": "Set values for input variables in the root module of the configuration, either key=value items separated by new line or as a JSON object.",
-          "placeholder": "region=ap-northwest-1\nsize=xlarge",
+          "description": "Input variables in the root module of the configuration, either key=value items separated by new line or text that parses as JSON.",
+          "placeholder": "region = \"ap-northwest-1\"\nsize = \"xlarge\"",
           "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
         },
         {

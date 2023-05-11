@@ -10,14 +10,6 @@ const { resolve: resolvePath } = require("path");
 
 const exec = promisify(childProcess.exec);
 
-function logToActivityLog(message) {
-  // TODO: Change console.error to console.info
-  // Right now (Kaholo v4.1.2.1) console.info
-  // does not print messages to Activity Log
-  // Jira ticket: https://kaholo.atlassian.net/browse/KAH-3636
-  console.error(message);
-}
-
 async function createVariablesString({
   varFile,
   variables,
@@ -45,7 +37,14 @@ async function createVariablesString({
     variablesText += "\n";
   }
   if (variables) {
-    variablesText += variables;
+    // parameter is "type": "text", but might be stringified JSON
+    try {
+      const varsObj = JSON.parse(variables);
+      const pairs = Object.keys(varsObj).map((key) => `${key} = "${varsObj[key]}"`).join("\n");
+      variablesText += pairs;
+    } catch {
+      variablesText += variables;
+    }
     variablesText += "\n";
   }
   if (variablesText.length) {
@@ -132,6 +131,5 @@ module.exports = {
   tryParseTerraformJsonOutput,
   exec,
   isJsonAllowed,
-  logToActivityLog,
   getCurrentUserId,
 };

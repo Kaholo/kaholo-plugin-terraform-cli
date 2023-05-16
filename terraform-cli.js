@@ -19,7 +19,7 @@ function createTerraformCommand(baseCommand, {
   additionalArgs = [],
 }) {
   const command = baseCommand.startsWith("terraform ") ? baseCommand.substring(10) : baseCommand;
-  const postArgs = [...additionalArgs, "-no-color"];
+  const postArgs = [...additionalArgs];
   if (variableFile) {
     postArgs.push("-var-file=$TERRAFORM_VAR_FILE_MOUNT_POINT");
   }
@@ -80,15 +80,6 @@ async function execute(params) {
   }
 
   const dockerCommand = pluginLib.docker.buildDockerCommand(buildDockerCommandOptions);
-
-  // let result;
-  // try {
-  //   result = await exec(dockerCommand, {
-  //     env: {
-  //       ...convertMapToObject(environmentVariables),
-  //       ...dockerEnvs,
-  //     },
-  //   });
 
   const {
     stdout,

@@ -8,7 +8,7 @@ const {
   saveToRandomTemporaryFile,
   shredTerraformVarFile,
   tryParseTerraformJsonOutput,
-  isJsonAllowed,
+  jsonIsAllowed,
   getCurrentUserId,
   asyncExec,
 } = require("./helpers");
@@ -24,7 +24,7 @@ function createTerraformCommand(baseCommand, {
     postArgs.push("-var-file=$TERRAFORM_VAR_FILE_MOUNT_POINT");
   }
   if (json) {
-    if (isJsonAllowed(command)) {
+    if (jsonIsAllowed(command)) {
       postArgs.push("-json");
     } else {
       console.error("JSON Output is not supported for this Terraform command.");
@@ -113,7 +113,7 @@ async function execute(params) {
     console.error(stderr);
   }
 
-  if (rawOutput) {
+  if (rawOutput || !jsonIsAllowed(command)) {
     return "";
   }
   const parsedStdout = tryParseTerraformJsonOutput(stdout);

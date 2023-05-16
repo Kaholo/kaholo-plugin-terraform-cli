@@ -71,7 +71,7 @@ async function getCurrentUserId() {
   return stdout.trim();
 }
 
-function isJsonAllowed(command) {
+function jsonIsAllowed(command) {
   const subcommand = command.split(" ").find((arg) => !arg.startsWith("-"));
   const subcommandsJsonNotSupported = ["init"];
   return !subcommandsJsonNotSupported.includes(subcommand);
@@ -179,7 +179,7 @@ module.exports = {
   shredTerraformVarFile,
   tryParseTerraformJsonOutput,
   exec,
-  isJsonAllowed,
+  jsonIsAllowed,
   getCurrentUserId,
   asyncExec,
 };

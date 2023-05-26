@@ -1,14 +1,32 @@
 {
   "name": "Terraform-CLI",
-  "viewName":"Terraform CLI",
+  "viewName": "Terraform CLI",
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
   "version": "2.2.0",
-  "description": "Kaholo plugin for integration with Terraform CLI.",
+  "description": "Open-source tool to provision and manage infrastructure in any cloud",
   "imgUrl": "logo.png",
-  "category": ["INFRASTRUCTURE MGMT", "CI/CD"],
-  "keywords": ["cloud", "CLI", "infra", "infrastructure", "IaC", "management", "vm", "instance", "HashiCorp", "declarative"],
+  "category": [
+    "Infrastructure Management"
+  ],
+  "keywords": [
+    "cloud",
+    "cli",
+    "init",
+    "plan",
+    "apply",
+    "destroy",
+    "infrastructure",
+    "IaC",
+    "code",
+    "management",
+    "vm",
+    "instance",
+    "HashiCorp",
+    "declarative",
+    "gitops"
+  ],
   "settings": [
     {
       "name": "workingDirectory",

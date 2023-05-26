@@ -71,7 +71,7 @@ async function getCurrentUserId() {
   return stdout.trim();
 }
 
-function isJsonAllowed(command) {
+function jsonIsAllowed(command) {
   const subcommand = command.split(" ").find((arg) => !arg.startsWith("-"));
   const subcommandsJsonNotSupported = ["init"];
   return !subcommandsJsonNotSupported.includes(subcommand);
@@ -121,6 +121,55 @@ async function isPathFile(path) {
   return stat.isFile();
 }
 
+async function asyncExec(params) {
+  const {
+    command,
+    onProgressFn,
+    options = {},
+  } = params;
+
+  let childProcessError;
+  let childProcessInstance;
+  try {
+    childProcessInstance = childProcess.exec(command, options);
+  } catch (error) {
+    return { error };
+  }
+
+  const outputChunks = [];
+
+  childProcessInstance.stdout.on("data", (data) => {
+    outputChunks.push({ type: "stdout", data });
+
+    onProgressFn?.(data);
+  });
+  childProcessInstance.stderr.on("data", (data) => {
+    outputChunks.push({ type: "stderr", data });
+
+    onProgressFn?.(data);
+  });
+  childProcessInstance.on("error", (error) => {
+    childProcessError = error;
+  });
+
+  try {
+    await promisify(childProcessInstance.on.bind(childProcessInstance))("close");
+  } catch (error) {
+    childProcessError = error;
+  }
+
+  const outputObject = outputChunks.reduce((acc, cur) => ({
+    ...acc,
+    [cur.type]: `${acc[cur.type]}${cur.data.toString()}`,
+  }), { stdout: "", stderr: "" });
+
+  if (childProcessError) {
+    outputObject.error = childProcessError;
+  }
+
+  return outputObject;
+}
+
 module.exports = {
   validateDirectoryPath,
   convertMapToObject,
@@ -130,6 +179,7 @@ module.exports = {
   shredTerraformVarFile,
   tryParseTerraformJsonOutput,
   exec,
-  isJsonAllowed,
+  jsonIsAllowed,
   getCurrentUserId,
+  asyncExec,
 };

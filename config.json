@@ -39,11 +39,6 @@
   ],
   "methods": [
     {
-      "name": "getTerraformVersion",
-      "viewName": "Get Terraform Version",
-      "params": []
-    },
-    {
       "name": "runMainCommand",
       "viewName": "Run Main Terraform Command",
       "params": [
@@ -136,7 +131,7 @@
           "viewName": "Command",
           "type": "string",
           "description": "Terraform command to execute in the docker container.",
-          "placeholder": "show",
+          "placeholder": "terraform --version",
           "required": true
         },
         {

@@ -2,12 +2,6 @@ const { bootstrap } = require("@kaholo/plugin-library");
 const { createVariablesString } = require("./helpers");
 const terraformCli = require("./terraform-cli");
 
-async function getTerraformVersion() {
-  return terraformCli.execute({
-    command: "terraform version -json",
-  });
-}
-
 async function runMainCommand(params) {
   const additionalArgs = [];
   if (params.mode === "destroy" || params.mode === "apply") {
@@ -31,7 +25,6 @@ async function runCommand(params) {
 }
 
 module.exports = bootstrap({
-  getTerraformVersion,
   runCommand,
   runMainCommand,
 });

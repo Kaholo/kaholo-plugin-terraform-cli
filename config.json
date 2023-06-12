@@ -41,6 +41,7 @@
     {
       "name": "runMainCommand",
       "viewName": "Run Main Terraform Command",
+      "allowEmptyResult": true,
       "params": [
         {
           "name": "mode",
@@ -125,6 +126,7 @@
     {
       "name": "runCommand",
       "viewName": "Run Any Terraform Command",
+      "allowEmptyResult": true,
       "params": [
         {
           "name": "command",

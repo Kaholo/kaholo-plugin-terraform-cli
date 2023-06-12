@@ -15,6 +15,6 @@
     "eslint-plugin-import": "2.25.4"
   },
   "dependencies": {
-    "@kaholo/plugin-library": "^2.2.1"
+    "@kaholo/plugin-library": "^2.3.1"
   }
 }

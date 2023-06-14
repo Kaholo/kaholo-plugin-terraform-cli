@@ -9,12 +9,12 @@
   },
   "author": "Kaholo Team",
   "license": "ISC",
-  "dependencies": {
-    "@kaholo/plugin-library": "^2.1.2"
-  },
   "devDependencies": {
     "eslint": "8.10.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-import": "2.25.4"
+  },
+  "dependencies": {
+    "@kaholo/plugin-library": "^2.3.1"
   }
 }

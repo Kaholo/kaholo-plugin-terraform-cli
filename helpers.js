@@ -87,11 +87,20 @@ async function validateDirectoryPath(path) {
 }
 
 function tryParseTerraformJsonOutput(terraformOutput) {
-  try {
-    return terraformOutput.trim().split("\n").map((log) => JSON.parse(log));
-  } catch {
-    return terraformOutput;
+  const linesArray = terraformOutput.trim().split("\n");
+  const jsonArray = [];
+  linesArray.forEach((line) => {
+    try {
+      const obj = JSON.parse(line);
+      jsonArray.push(obj);
+    } catch {
+      // just ignore lines that don't parse - they are in Activity Log anyway
+    }
+  });
+  if (jsonArray.length > 0) {
+    return jsonArray;
   }
+  return undefined;
 }
 
 function convertMapToObject(map) {

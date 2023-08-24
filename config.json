@@ -5,7 +5,7 @@
   "execProgram": "node",
   "main": "app.js",
   "version": "2.2.0",
-  "description": "Open-source tool to provision and manage infrastructure in any cloud",
+  "description": "Provision and manage infrastructure in any cloud",
   "imgUrl": "logo.png",
   "category": [
     "Infrastructure Management"
@@ -18,7 +18,7 @@
     "apply",
     "destroy",
     "infrastructure",
-    "IaC",
+    "iac",
     "code",
     "management",
     "vm",
@@ -32,8 +32,8 @@
       "name": "workingDirectory",
       "viewName": "Default Working Directory",
       "type": "string",
-      "description": "This is the default location where Terraform will expect to find an inventory and execution script.",
-      "placeholder": "/home/user/tmp/",
+      "description": "Directory on Kaholo agent to use by default for new actions",
+      "placeholder": "repos/terraform",
       "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/init"
     }
   ],
@@ -76,15 +76,15 @@
           "viewName": "Working Directory",
           "type": "string",
           "required": false,
-          "description": "This is the location where Terraform will expect to find an inventory and execution script.",
-          "placeholder": "/home/user/tmp/",
+          "description": "Directory on Kaholo agent containing inventory and execution plan",
+          "placeholder": "repos/terraform/plan-a",
           "learnUrl": "https://www.terraform.io/docs/cli/commands/init"
         },
         {
           "name": "variables",
           "viewName": "Vars",
           "type": "text",
-          "description": "Input variables in the root module of the configuration, either key=value items separated by new line or text that parses as JSON.",
+          "description": "Input variables for the root module of the configuration, either key=value items separated by new line or text that parses as JSON",
           "placeholder": "region = \"ap-northwest-1\"\nsize = \"xlarge\"",
           "learnUrl": "https://learn.hashicorp.com/tutorials/terraform/variables"
         },
@@ -92,48 +92,49 @@
           "name": "secretVariables",
           "viewName": "Secret Vars",
           "type": "vault",
-          "description": "Same as parameter \"Vars\" but from Kaholo vault."
+          "description": "Same as parameter \"Vars\" but from Kaholo vault"
         },
         {
           "name": "secretEnvVariables",
           "viewName": "Secret environment variables",
           "type": "vault",
-          "description": "One-per-line Key=Value pairs stored as a Kaholo Vault item."
+          "description": "One-per-line Key=Value pairs stored as a Kaholo Vault item"
         },
         {
           "name": "varFile",
           "viewName": "Var File",
           "type": "string",
-          "description": "Load variable values from the given file.",
-          "placeholder": "/home/user/tmp/vars_file.json",
+          "description": "Existing file on Kaholo agent containing variable values",
+          "placeholder": "repos/terraform/plan-a/vars_file.json",
           "learnUrl": "https://www.terraform.io/language/values/variables#variable-definitions-tfvars-files"
         },
         {
           "name": "rawOutput",
           "viewName": "Raw Output",
           "description": "Execute Terraform command without the \"-json\" flag.",
+          "default": false,
           "type": "boolean"
         },
         {
           "name": "customDockerImage",
-          "viewName": "Custom Docker Image",
-          "description": "Optionally provide a Docker image which will be used instead of the default hashicorp/terraform:1.5.4",
+          "viewName": "Docker Image",
+          "description": "Docker Image to use to run Terraform commands",
           "type": "string",
-          "default": "hashicorp/terraform:1.5.4",
-          "placeholder": "hashicorp/terraform:1.5.4"
+          "default": "hashicorp/terraform:1.5.6",
+          "placeholder": "hashicorp/terraform:1.5.6"
         }
       ]
     },
     {
       "name": "runCommand",
-      "viewName": "Run Any Terraform Command",
+      "viewName": "Run Terraform Command",
       "allowEmptyResult": true,
       "params": [
         {
           "name": "command",
           "viewName": "Command",
           "type": "string",
-          "description": "Terraform command to execute in the docker container.",
+          "description": "Terraform command to execute",
           "placeholder": "terraform --version",
           "required": true
         },
@@ -141,28 +142,29 @@
           "name": "workingDirectory",
           "viewName": "Working Directory",
           "type": "string",
-          "description": "This is the location where Terraform will expect to find an inventory and execution script.",
-          "placeholder": "/home/user/tmp/"
+          "description": "Directory on Kaholo agent where the command will be run",
+          "placeholder": "repos/terraform/plan-a"
         },
         {
           "name": "secretVariables",
           "viewName": "Secret Vars",
           "type": "vault",
-          "description": "Same as parameter \"Vars\" but from Kaholo vault."
+          "description": "Optional input variables for the command, either key=value items separated by new line or text that parses as JSON"
         },
         {
           "name": "rawOutput",
           "viewName": "Raw Output",
           "description": "Execute Terraform command without the \"-json\" flag.",
+          "default": false,
           "type": "boolean"
         },
         {
           "name": "customDockerImage",
-          "viewName": "Custom Docker Image",
-          "description": "Optionally provide a Docker image which will be used instead of the default hashicorp/terraform:1.5.4",
+          "viewName": "Docker Image",
+          "description": "Docker Image to use to run Terraform commands",
           "type": "string",
-          "default": "hashicorp/terraform:1.5.4",
-          "placeholder": "hashicorp/terraform:1.5.4"
+          "default": "hashicorp/terraform:1.5.6",
+          "placeholder": "hashicorp/terraform:1.5.6"
         }
       ]
     }

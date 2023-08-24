@@ -86,23 +86,6 @@ async function validateDirectoryPath(path) {
   }
 }
 
-function tryParseTerraformJsonOutput(terraformOutput) {
-  const linesArray = terraformOutput.trim().split("\n");
-  const jsonArray = [];
-  linesArray.forEach((line) => {
-    try {
-      const obj = JSON.parse(line);
-      jsonArray.push(obj);
-    } catch {
-      // just ignore lines that don't parse - they are in Activity Log anyway
-    }
-  });
-  if (jsonArray.length > 0) {
-    return jsonArray;
-  }
-  return undefined;
-}
-
 function convertMapToObject(map) {
   return Object.fromEntries(map.entries());
 }
@@ -145,38 +128,48 @@ async function asyncExec(params) {
     return { error };
   }
 
-  const outputChunks = [];
+  const outputObjects = [];
 
   childProcessInstance.stdout.on("data", (data) => {
-    outputChunks.push({ type: "stdout", data });
-
-    onProgressFn?.(data);
+    try {
+      const fixedData = data.replace(/}\s*\n*\s*{/g, "},{"); // with or without newline or whitespace between
+      const dataArray = JSON.parse(`[${fixedData}]`);
+      dataArray.forEach((item) => {
+        outputObjects.push(item);
+        onProgressFn?.(`${(item["@message"] || "JSON object returned - see final result")}\n`);
+      });
+    } catch (e) {
+      onProgressFn?.(data);
+    }
   });
+
   childProcessInstance.stderr.on("data", (data) => {
-    outputChunks.push({ type: "stderr", data });
-
     onProgressFn?.(data);
   });
+
   childProcessInstance.on("error", (error) => {
     childProcessError = error;
   });
 
   try {
     await promisify(childProcessInstance.on.bind(childProcessInstance))("close");
+    console.info("\nDone.\n");
   } catch (error) {
     childProcessError = error;
   }
 
-  const outputObject = outputChunks.reduce((acc, cur) => ({
-    ...acc,
-    [cur.type]: `${acc[cur.type]}${cur.data.toString()}`,
-  }), { stdout: "", stderr: "" });
-
-  if (childProcessError) {
-    outputObject.error = childProcessError;
+  if (outputObjects.length > 0) {
+    if (outputObjects.length === 1) {
+      return { parsedObjects: outputObjects[0] };
+    }
+    return { parsedObjects: outputObjects };
   }
 
-  return outputObject;
+  if (childProcessError) {
+    return childProcessError;
+  }
+
+  return "";
 }
 
 module.exports = {
@@ -186,7 +179,6 @@ module.exports = {
   createVariablesString,
   saveToRandomTemporaryFile,
   shredTerraformVarFile,
-  tryParseTerraformJsonOutput,
   exec,
   jsonIsAllowed,
   getCurrentUserId,

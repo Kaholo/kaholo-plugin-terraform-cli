@@ -7,7 +7,6 @@ const {
   generateRandomTemporaryPath,
   saveToRandomTemporaryFile,
   shredTerraformVarFile,
-  tryParseTerraformJsonOutput,
   jsonIsAllowed,
   getCurrentUserId,
   asyncExec,
@@ -82,9 +81,8 @@ async function execute(params) {
   const dockerCommand = pluginLib.docker.buildDockerCommand(buildDockerCommandOptions);
 
   const {
-    stdout,
-    stderr,
     error,
+    parsedObjects,
   } = await asyncExec({
     command: dockerCommand,
     onProgressFn: process.stdout.write.bind(process.stdout),
@@ -100,6 +98,10 @@ async function execute(params) {
     await shredTerraformVarFile(environmentVariables.get("TERRAFORM_VAR_FILE"));
   }
 
+  if (parsedObjects) {
+    return parsedObjects;
+  }
+
   if (error) {
     if (!rawOutput) {
       console.error("\nRECOMMENDATION: Try enabling parameter Raw Output for a more meaningful error message.\n");
@@ -107,17 +109,7 @@ async function execute(params) {
     throw new Error(error);
   }
 
-  if (stderr && !stdout) {
-    throw new Error(stderr);
-  } else if (stderr) {
-    console.error(stderr);
-  }
-
-  if (rawOutput || !jsonIsAllowed(command)) {
-    return "";
-  }
-  const parsedStdout = tryParseTerraformJsonOutput(stdout);
-  return parsedStdout;
+  return "";
 }
 
 module.exports = {

@@ -166,7 +166,7 @@ async function asyncExec(params) {
   }
 
   if (childProcessError) {
-    returnObject.error = childProcessError;
+    return childProcessError;
   }
 
   return "";

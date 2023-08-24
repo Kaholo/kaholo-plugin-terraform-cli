@@ -132,7 +132,7 @@ async function asyncExec(params) {
 
   childProcessInstance.stdout.on("data", (data) => {
     try {
-      fixedData = data.replace(/}\s*\n*\s*{/g, "},{"); // with or without newline or whitespace between
+      const fixedData = data.replace(/}\s*\n*\s*{/g, "},{"); // with or without newline or whitespace between
       const dataArray = JSON.parse(`[${fixedData}]`);
       dataArray.forEach((item) => {
         outputObjects.push(item);
@@ -159,7 +159,7 @@ async function asyncExec(params) {
   }
 
   if (outputObjects.length > 0) {
-    if (outputObjects.length == 1) {
+    if (outputObjects.length === 1) {
       return { parsedObjects: outputObjects[0] };
     }
     return { parsedObjects: outputObjects };

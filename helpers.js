@@ -136,7 +136,7 @@ async function asyncExec(params) {
       const dataArray = JSON.parse(`[${fixedData}]`);
       dataArray.forEach((item) => {
         outputObjects.push(item);
-        onProgressFn?.(`${(item['@message'] || "JSON object returned - see final result")}\n`);
+        onProgressFn?.(`${(item["@message"] || "JSON object returned - see final result")}\n`);
       });
     } catch (e) {
       onProgressFn?.(data);

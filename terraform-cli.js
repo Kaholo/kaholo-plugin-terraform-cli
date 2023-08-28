@@ -7,10 +7,9 @@ const {
   generateRandomTemporaryPath,
   saveToRandomTemporaryFile,
   shredTerraformVarFile,
-  tryParseTerraformJsonOutput,
-  isJsonAllowed,
+  jsonIsAllowed,
   getCurrentUserId,
-  exec,
+  asyncExec,
 } = require("./helpers");
 
 function createTerraformCommand(baseCommand, {
@@ -19,12 +18,12 @@ function createTerraformCommand(baseCommand, {
   additionalArgs = [],
 }) {
   const command = baseCommand.startsWith("terraform ") ? baseCommand.substring(10) : baseCommand;
-  const postArgs = [...additionalArgs, "-no-color"];
+  const postArgs = [...additionalArgs];
   if (variableFile) {
     postArgs.push("-var-file=$TERRAFORM_VAR_FILE_MOUNT_POINT");
   }
   if (json) {
-    if (isJsonAllowed(command)) {
+    if (jsonIsAllowed(command)) {
       postArgs.push("-json");
     } else {
       console.error("JSON Output is not supported for this Terraform command.");
@@ -81,27 +80,36 @@ async function execute(params) {
 
   const dockerCommand = pluginLib.docker.buildDockerCommand(buildDockerCommandOptions);
 
-  let result;
-  try {
-    result = await exec(dockerCommand, {
+  const {
+    error,
+    parsedObjects,
+  } = await asyncExec({
+    command: dockerCommand,
+    onProgressFn: process.stdout.write.bind(process.stdout),
+    options: {
       env: {
         ...convertMapToObject(environmentVariables),
         ...dockerEnvs,
       },
-    });
-  } catch (error) {
+    },
+  });
+
+  if (environmentVariables.has("TERRAFORM_VAR_FILE")) {
+    await shredTerraformVarFile(environmentVariables.get("TERRAFORM_VAR_FILE"));
+  }
+
+  if (parsedObjects) {
+    return parsedObjects;
+  }
+
+  if (error) {
     if (!rawOutput) {
       console.error("\nRECOMMENDATION: Try enabling parameter Raw Output for a more meaningful error message.\n");
     }
     throw new Error(error);
-  } finally {
-    if (environmentVariables.has("TERRAFORM_VAR_FILE")) {
-      await shredTerraformVarFile(environmentVariables.get("TERRAFORM_VAR_FILE"));
-    }
   }
 
-  result.stdout = tryParseTerraformJsonOutput(result.stdout);
-  return result.stdout;
+  return "";
 }
 
 module.exports = {

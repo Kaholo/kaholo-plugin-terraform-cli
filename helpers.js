@@ -10,14 +10,6 @@ const { resolve: resolvePath } = require("path");
 
 const exec = promisify(childProcess.exec);
 
-function logToActivityLog(message) {
-  // TODO: Change console.error to console.info
-  // Right now (Kaholo v4.1.2.1) console.info
-  // does not print messages to Activity Log
-  // Jira ticket: https://kaholo.atlassian.net/browse/KAH-3636
-  console.error(message);
-}
-
 async function createVariablesString({
   varFile,
   variables,
@@ -45,7 +37,14 @@ async function createVariablesString({
     variablesText += "\n";
   }
   if (variables) {
-    variablesText += variables;
+    // parameter is "type": "text", but might be stringified JSON
+    try {
+      const varsObj = JSON.parse(variables);
+      const pairs = Object.keys(varsObj).map((key) => `${key} = "${varsObj[key]}"`).join("\n");
+      variablesText += pairs;
+    } catch {
+      variablesText += variables;
+    }
     variablesText += "\n";
   }
   if (variablesText.length) {
@@ -72,7 +71,7 @@ async function getCurrentUserId() {
   return stdout.trim();
 }
 
-function isJsonAllowed(command) {
+function jsonIsAllowed(command) {
   const subcommand = command.split(" ").find((arg) => !arg.startsWith("-"));
   const subcommandsJsonNotSupported = ["init"];
   return !subcommandsJsonNotSupported.includes(subcommand);
@@ -84,14 +83,6 @@ async function validateDirectoryPath(path) {
   }
   if (!await isPathDirectory(path)) {
     throw new Error(`Invalid Terraform Directory path! Path ${path} is not a directory.`);
-  }
-}
-
-function tryParseTerraformJsonOutput(terraformOutput) {
-  try {
-    return terraformOutput.trim().split("\n").map((log) => JSON.parse(log));
-  } catch {
-    return terraformOutput;
   }
 }
 
@@ -122,6 +113,65 @@ async function isPathFile(path) {
   return stat.isFile();
 }
 
+async function asyncExec(params) {
+  const {
+    command,
+    onProgressFn,
+    options = {},
+  } = params;
+
+  let childProcessError;
+  let childProcessInstance;
+  try {
+    childProcessInstance = childProcess.exec(command, options);
+  } catch (error) {
+    return { error };
+  }
+
+  const outputObjects = [];
+
+  childProcessInstance.stdout.on("data", (data) => {
+    try {
+      const fixedData = data.replace(/}\s*\n*\s*{/g, "},{"); // with or without newline or whitespace between
+      const dataArray = JSON.parse(`[${fixedData}]`);
+      dataArray.forEach((item) => {
+        outputObjects.push(item);
+        onProgressFn?.(`${(item["@message"] || "JSON object returned - see final result")}\n`);
+      });
+    } catch (e) {
+      onProgressFn?.(data);
+    }
+  });
+
+  childProcessInstance.stderr.on("data", (data) => {
+    onProgressFn?.(data);
+  });
+
+  childProcessInstance.on("error", (error) => {
+    childProcessError = error;
+  });
+
+  try {
+    await promisify(childProcessInstance.on.bind(childProcessInstance))("close");
+    console.info("\nDone.\n");
+  } catch (error) {
+    childProcessError = error;
+  }
+
+  if (outputObjects.length > 0) {
+    if (outputObjects.length === 1) {
+      return { parsedObjects: outputObjects[0] };
+    }
+    return { parsedObjects: outputObjects };
+  }
+
+  if (childProcessError) {
+    return childProcessError;
+  }
+
+  return "";
+}
+
 module.exports = {
   validateDirectoryPath,
   convertMapToObject,
@@ -129,9 +179,8 @@ module.exports = {
   createVariablesString,
   saveToRandomTemporaryFile,
   shredTerraformVarFile,
-  tryParseTerraformJsonOutput,
   exec,
-  isJsonAllowed,
-  logToActivityLog,
+  jsonIsAllowed,
   getCurrentUserId,
+  asyncExec,
 };

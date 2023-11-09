@@ -7,6 +7,9 @@ async function runMainCommand(params) {
   if (params.mode === "destroy" || params.mode === "apply") {
     additionalArgs.push("-auto-approve");
   }
+  if (params.extraCommandArgs) {
+    additionalArgs.push(params.extraCommandArgs);
+  }
 
   return runCommand({
     ...params,

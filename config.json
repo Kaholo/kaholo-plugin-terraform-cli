@@ -50,6 +50,7 @@
           "required": true,
           "type": "options",
           "default": "init",
+          "placeholder": "please select one",
           "options": [
             {
               "id": "init",
@@ -127,9 +128,10 @@
           "required": true
         },
         {
-          "name": "extraCommandArgs",
+          "name": "additionalArgs",
           "viewName": "Additional Command Arguments",
-          "type": "string",
+          "type": "text",
+          "parserType": "array",
           "description": "Add any arguments you need that are not already handled by above parameters",
           "placeholder": "-backend-config=dev.conf",
           "learnUrl": "https://developer.hashicorp.com/terraform/cli"
@@ -144,7 +146,8 @@
         {
           "name": "command",
           "viewName": "Command",
-          "type": "string",
+          "type": "text",
+          "parserType": "array",
           "description": "Terraform command to execute",
           "placeholder": "terraform --version",
           "required": true

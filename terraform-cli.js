@@ -7,7 +7,6 @@ const {
   generateRandomTemporaryPath,
   saveToRandomTemporaryFile,
   shredTerraformVarFile,
-  jsonIsAllowed,
   getCurrentUserId,
   asyncExec,
 } = require("./helpers");
@@ -23,7 +22,7 @@ function createTerraformCommand(baseCommand, {
     postArgs.push("-var-file=$TERRAFORM_VAR_FILE_MOUNT_POINT");
   }
   if (json) {
-    if (jsonIsAllowed(command)) {
+    if (baseCommand !== "init") {
       postArgs.push("-json");
     } else {
       console.error("JSON Output is not supported for this Terraform command.");
@@ -36,6 +35,7 @@ async function execute(params) {
   const {
     workingDirectory,
     command,
+    baseCommand,
     variables,
     secretEnvVariables,
     rawOutput,
@@ -55,11 +55,28 @@ async function execute(params) {
     environmentVariables.set("TERRAFORM_VAR_FILE_MOUNT_POINT", generateRandomTemporaryPath());
   }
 
-  const terraformCommand = createTerraformCommand(command, {
-    variableFile: environmentVariables.has("TERRAFORM_VAR_FILE_MOUNT_POINT"),
-    json: !rawOutput,
-    additionalArgs,
-  });
+  console.error(`COMMAND: ${JSON.stringify(command)}`)
+  console.error(`BASECOMMAND: ${baseCommand}`)
+
+  let terraformCommand;
+  // handle method runCommand
+  if (command) {
+    const commandString = command.join(" ");
+    terraformCommand = commandString.startsWith("terraform ") ? commandString.substring(10) : commandString;
+    if (!rawOutput && !commandString.includes("-json")) {
+      terraformCommand = `${terraformCommand} -json`;
+    }
+  }
+  
+  // handle method runMainCommand
+  if (baseCommand) {
+    terraformCommand = createTerraformCommand(baseCommand, {
+      variableFile: environmentVariables.has("TERRAFORM_VAR_FILE_MOUNT_POINT"),
+      json: !rawOutput,
+      additionalArgs,
+    });  
+  }
+  console.error(`terraformCommand: ${terraformCommand}`)
 
   const dockerEnvs = secretEnvVariables ? pluginLib.parsers.keyValuePairs(secretEnvVariables) : {};
 

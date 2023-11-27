@@ -11,6 +11,7 @@
     "Infrastructure Management"
   ],
   "keywords": [
+    "terraform",
     "cloud",
     "cli",
     "init",
@@ -23,7 +24,7 @@
     "management",
     "vm",
     "instance",
-    "HashiCorp",
+    "hashicorp",
     "declarative",
     "gitops"
   ],
@@ -48,6 +49,7 @@
           "viewName": "Mode",
           "required": true,
           "type": "options",
+          "default": "init",
           "options": [
             {
               "id": "init",

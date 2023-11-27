@@ -3,10 +3,9 @@ const { createVariablesString } = require("./helpers");
 const terraformCli = require("./terraform-cli");
 
 async function runMainCommand(params) {
-
-  const { 
+  const {
     additionalArgs = [],
-    mode: baseCommand, 
+    mode: baseCommand,
   } = params;
 
   if (baseCommand === "destroy" || baseCommand === "apply") {

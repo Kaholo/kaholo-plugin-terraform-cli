@@ -99,7 +99,7 @@
         },
         {
           "name": "secretEnvVariables",
-          "viewName": "Secret environment variables",
+          "viewName": "Secret Environment Variables",
           "type": "vault",
           "description": "One-per-line Key=Value pairs stored as a Kaholo Vault item"
         },

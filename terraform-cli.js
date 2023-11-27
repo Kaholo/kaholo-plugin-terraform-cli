@@ -55,9 +55,6 @@ async function execute(params) {
     environmentVariables.set("TERRAFORM_VAR_FILE_MOUNT_POINT", generateRandomTemporaryPath());
   }
 
-  console.error(`COMMAND: ${JSON.stringify(command)}`)
-  console.error(`BASECOMMAND: ${baseCommand}`)
-
   let terraformCommand;
   // handle method runCommand
   if (command) {
@@ -67,16 +64,15 @@ async function execute(params) {
       terraformCommand = `${terraformCommand} -json`;
     }
   }
-  
+
   // handle method runMainCommand
   if (baseCommand) {
     terraformCommand = createTerraformCommand(baseCommand, {
       variableFile: environmentVariables.has("TERRAFORM_VAR_FILE_MOUNT_POINT"),
       json: !rawOutput,
       additionalArgs,
-    });  
+    });
   }
-  console.error(`terraformCommand: ${terraformCommand}`)
 
   const dockerEnvs = secretEnvVariables ? pluginLib.parsers.keyValuePairs(secretEnvVariables) : {};
 

@@ -122,8 +122,9 @@
           "viewName": "Docker Image",
           "description": "Docker Image to use to run Terraform commands",
           "type": "string",
-          "default": "hashicorp/terraform:1.6.3",
-          "placeholder": "hashicorp/terraform:1.6.3"
+          "default": "hashicorp/terraform:1.6.4",
+          "placeholder": "hashicorp/terraform:1.6.4",
+          "required": true
         },
         {
           "name": "extraCommandArgs",
@@ -173,8 +174,9 @@
           "viewName": "Docker Image",
           "description": "Docker Image to use to run Terraform commands",
           "type": "string",
-          "default": "hashicorp/terraform:1.6.3",
-          "placeholder": "hashicorp/terraform:1.6.3"
+          "default": "hashicorp/terraform:1.6.4",
+          "placeholder": "hashicorp/terraform:1.6.4",
+          "required": true
         }
       ]
     }

@@ -4,13 +4,14 @@
   "type": "executer",
   "execProgram": "node",
   "main": "app.js",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Provision and manage infrastructure in any cloud",
   "imgUrl": "logo.png",
   "category": [
     "Infrastructure Management"
   ],
   "keywords": [
+    "terraform",
     "cloud",
     "cli",
     "init",
@@ -23,7 +24,7 @@
     "management",
     "vm",
     "instance",
-    "HashiCorp",
+    "hashicorp",
     "declarative",
     "gitops"
   ],
@@ -48,6 +49,8 @@
           "viewName": "Mode",
           "required": true,
           "type": "options",
+          "default": "init",
+          "placeholder": "please select one",
           "options": [
             {
               "id": "init",
@@ -96,7 +99,7 @@
         },
         {
           "name": "secretEnvVariables",
-          "viewName": "Secret environment variables",
+          "viewName": "Secret Environment Variables",
           "type": "vault",
           "description": "One-per-line Key=Value pairs stored as a Kaholo Vault item"
         },
@@ -120,8 +123,18 @@
           "viewName": "Docker Image",
           "description": "Docker Image to use to run Terraform commands",
           "type": "string",
-          "default": "hashicorp/terraform:1.5.6",
-          "placeholder": "hashicorp/terraform:1.5.6"
+          "default": "hashicorp/terraform:1.6.4",
+          "placeholder": "hashicorp/terraform:1.6.4",
+          "required": true
+        },
+        {
+          "name": "additionalArgs",
+          "viewName": "Additional Command Arguments",
+          "type": "text",
+          "parserType": "array",
+          "description": "Add any arguments you need that are not already handled by above parameters",
+          "placeholder": "-backend-config=dev.conf",
+          "learnUrl": "https://developer.hashicorp.com/terraform/cli"
         }
       ]
     },
@@ -133,7 +146,8 @@
         {
           "name": "command",
           "viewName": "Command",
-          "type": "string",
+          "type": "text",
+          "parserType": "array",
           "description": "Terraform command to execute",
           "placeholder": "terraform --version",
           "required": true
@@ -163,8 +177,9 @@
           "viewName": "Docker Image",
           "description": "Docker Image to use to run Terraform commands",
           "type": "string",
-          "default": "hashicorp/terraform:1.5.6",
-          "placeholder": "hashicorp/terraform:1.5.6"
+          "default": "hashicorp/terraform:1.6.4",
+          "placeholder": "hashicorp/terraform:1.6.4",
+          "required": true
         }
       ]
     }

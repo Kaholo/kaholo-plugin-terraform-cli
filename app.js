@@ -3,14 +3,18 @@ const { createVariablesString } = require("./helpers");
 const terraformCli = require("./terraform-cli");
 
 async function runMainCommand(params) {
-  const additionalArgs = [];
-  if (params.mode === "destroy" || params.mode === "apply") {
+  const {
+    additionalArgs = [],
+    mode: baseCommand,
+  } = params;
+
+  if (baseCommand === "destroy" || baseCommand === "apply") {
     additionalArgs.push("-auto-approve");
   }
 
   return runCommand({
     ...params,
-    command: params.mode,
+    baseCommand,
     additionalArgs,
   });
 }

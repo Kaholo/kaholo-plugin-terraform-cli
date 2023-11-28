@@ -76,7 +76,7 @@ A set of key=value pairs that will be passed to Terraform as Terraform vars. Use
 ### Parameter: Secret Vars
 This is identical to Parameter `Vars` except the key=value pairs are stored in the Kaholo Vault so they will not appear in configuration, Activity log, error, or log messages. Use this for Terraform vars that should be kept secret, for example password or security keys. These secret variables will be recorded in a temporary file to be passed to Terraform using `-var-file=<tempfile location>` and then securely deleted after the command has finished but before the docker container is destroyed.
 
-### Parameter: Secret Environment Vars
+### Parameter: Secret Environment Variables
 Terraform variables cannot be used for some operations, for example using an S3 backend with the AWS EC2 provider. For these special cases, variables must be passed to Terraform as operating system environment variables instead (similar to running command `export KEY=value` before running terraform commands). These should be vaulted in the same was as normal Terraform vars, e.g. `AWS_SECRET_ACCESS_KEY=9p2zQ8N29r8y239ry23y0r239duw`.
 
 ### Parameter: Var File
@@ -85,5 +85,26 @@ This works like parameter `Vars` except the variables should be listed in a file
 ### Parameter: Raw Output
 By default the plugin will pass the Terraform command the `-json` flag to provide programmatically accessible JSON output in the Kaholo Final Result. If you prefer the plain text output as displayed when Terraform is run on a command line without the `-json` flag, select Raw Output and it will be so.
 
-## Method: Run Any Terraform Command
+### Parameter: Docker Image
+The terraform command is run in a docker container based on the docker image specified. The default image is the one used for test and development of the plugin. To use a more recent or custom image, specify the image here. The first time an image is used it will be automatically pulled to the Kaholo agent when the action runs.
+
+### Parameter: Additional Command Arguments
+Include additional command arguments here, if there are any not already covered by the parameters above. Arguments may be entered one per line for easy reading and will be joined into a single command string at execution time.
+
+## Method: Run Terraform Command
 Use this method to run any free-form Terraform command, including init, plan, apply, etc. Secret Vars is provided here to provide a method to hide variables in the Kaholo Vault as with method `Run Main Terraform Command`.
+
+### Parameter: Command
+The terraform command to run. The initial `terraform` is optional. Arguments may be entered one per line for easy reading and will be joined into a single command string at execution time.
+
+### Parameter: Working Directory
+The path (either absolute or relative) on the Kaholo agent of the directory containing the Terraform configuration to init, plan, apply, destroy or validate. If left unconfigured, the default Kaholo agent directory will be used. Relative paths are from the same default directory, on Kaholo 5.x it is `/twiddlebug/workspace`.
+
+### Parameter: Secret Vars
+This is identical to Parameter `Vars` except the key=value pairs are stored in the Kaholo Vault so they will not appear in configuration, Activity log, error, or log messages. Use this for Terraform vars that should be kept secret, for example password or security keys. These secret variables will be recorded in a temporary file to be passed to Terraform using `-var-file=<tempfile location>` and then securely deleted after the command has finished but before the docker container is destroyed.
+
+### Parameter: Raw Output
+By default the plugin will pass the Terraform command the `-json` flag to provide programmatically accessible JSON output in the Kaholo Final Result. If you prefer the plain text output as displayed when Terraform is run on a command line without the `-json` flag, select Raw Output and it will be so.
+
+### Parameter: Docker Image
+The terraform command is run in a docker container based on the docker image specified. The default image is the one used for test and development of the plugin. To use a more recent or custom image, specify the image here. The first time an image is used it will be automatically pulled to the Kaholo agent when the action runs.

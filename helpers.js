@@ -71,12 +71,6 @@ async function getCurrentUserId() {
   return stdout.trim();
 }
 
-function jsonIsAllowed(command) {
-  const subcommand = command.split(" ").find((arg) => !arg.startsWith("-"));
-  const subcommandsJsonNotSupported = ["init"];
-  return !subcommandsJsonNotSupported.includes(subcommand);
-}
-
 async function validateDirectoryPath(path) {
   if (!await pathExists(path)) {
     throw new Error(`Invalid Terraform Directory path! Path ${path} does not exist on agent.`);
@@ -180,7 +174,6 @@ module.exports = {
   saveToRandomTemporaryFile,
   shredTerraformVarFile,
   exec,
-  jsonIsAllowed,
   getCurrentUserId,
   asyncExec,
 };
